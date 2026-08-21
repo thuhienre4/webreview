@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products | Review Hubs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=16" />
+  <link rel="stylesheet" href="polish.css?v=16" />
+  <link rel="stylesheet" href="products.css?v=5" />
+  <link rel="stylesheet" href="harmony.css?v=5" />
+</head>
+<body class="products-page">
+  <header class="site-header"><div class="container header-inner">
+    <a class="brand-text" href="index.html">Review Hubs<span class="brand-dot">.</span></a>
+    <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Home</a><a class="active" href="products.html">Product</a><a href="coupons.html">Coupon</a><a href="blog.html">Blog</a></nav>
+  </div></header>
+
+  <main class="products-main">
+    <section class="products-intro">
+      <div class="container">
+        <div class="products-heading">
+          <div><h1>Product reviews</h1><p>Discover products by rating, category, pricing, coupons, and buyer feedback.</p></div>
+          <div class="product-directory-tools"><label class="product-directory-search"><span aria-hidden="true">⌕</span><input id="header-product-search" type="search" placeholder="Search products, brands, tags" /></label><label class="product-sort"><span class="sr-only">Sort products</span><select id="product-sort"><option value="rating">Top rated</option><option value="name">Name A–Z</option><option value="reviews">Most reviewed</option></select></label></div>
+        </div>
+        <div class="product-filters" aria-label="Product categories">
+          <button class="active" type="button" data-category="all">All products</button><button type="button" data-category="ai">AI Tools</button><button type="button" data-category="travel">Travel</button><button type="button" data-category="booking">Booking</button><button type="button" data-category="business">Business</button><button type="button" data-category="email">Email Marketing</button><button type="button" data-category="saas">SaaS</button><button type="button" data-category="scheduling">Scheduling</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="products-directory"><div class="container"><div class="product-grid" id="product-grid">
+      <article class="product-card" data-category="ai" data-search="lovo ai voice generator text to speech">
+        <div class="product-top"><img src="https://www.google.com/s2/favicons?sz=256&amp;domain=lovo.ai" alt="LOVO logo" /><div><h2>LOVO</h2><p>AI voice generation and expressive text-to-speech for creators.</p></div></div>
+        <div class="product-rating"><span>★★★★★</span><strong>4.8</strong><small>(2,140 reviews)</small></div><div class="product-tags"><span>AI</span><span>Voice</span><span>Creator Tools</span></div><div class="product-price"><strong>Plans from $24/month</strong><span>🎁 LOVO20</span></div><div class="product-actions"><a class="explore" href="deal.html?brand=LOVO&amp;offer=20%25%20Off">Explore ↗</a><a class="visit" href="https://lovo.ai" target="_blank" rel="noopener">Visit website ↗</a></div>
+      </article>
+      <article class="product-card" data-category="ai" data-search="lala ai artificial intelligence creative tool">
+        <div class="product-top"><img src="https://www.google.com/s2/favicons?sz=256&amp;domain=lala.ai" alt="Lala AI logo" /><div><h2>Lala AI</h2><p>Creative AI tools designed for fast, practical content workflows.</p></div></div>
+        <div class="product-rating"><span>★★★★★</span><strong>4.7</strong><small>(1,286 reviews)</small></div><div class="product-tags"><span>AI</span><span>Content</span><span>Automation</span></div><div class="product-price"><strong>Free plan available</strong><span>🎁 LALA15</span></div><div class="product-actions"><a class="explore" href="deal.html?brand=Lala%20AI&amp;offer=15%25%20Off">Explore ↗</a><a class="visit" href="https://lala.ai" target="_blank" rel="noopener">Visit website ↗</a></div>
+      </article>
+      <article class="product-card" data-category="travel" data-search="travelstart flights hotel travel booking">
+        <div class="product-top"><img src="https://www.google.com/s2/favicons?sz=256&amp;domain=travelstart.com" alt="Travelstart logo" /><div><h2>Travelstart</h2><p>Search and compare flights, hotels and travel options worldwide.</p></div></div>
+        <div class="product-rating"><span>★★★★★</span><strong>4.6</strong><small>(3,422 reviews)</small></div><div class="product-tags"><span>Travel</span><span>Flights</span><span>Hotels</span></div><div class="product-price"><strong>Compare live prices</strong><span>🎁 FLY10</span></div><div class="product-actions"><a class="explore" href="deal.html?brand=Travelstart&amp;offer=10%25%20Off">Explore ↗</a><a class="visit" href="https://travelstart.com" target="_blank" rel="noopener">Visit website ↗</a></div>
+      </article>
+      <article class="product-card" data-category="booking" data-search="booking.com hotels stays accommodation travel">
+        <div class="product-top"><img src="https://www.google.com/s2/favicons?sz=256&amp;domain=booking.com" alt="Booking.com logo" /><div><h2>Booking.com</h2><p>Book hotels, apartments and unique stays across the world.</p></div></div>
+        <div class="product-rating"><span>★★★★★</span><strong>4.8</strong><small>(8,932 reviews)</small></div><div class="product-tags"><span>Booking</span><span>Hotels</span><span>Travel</span></div><div class="product-price"><strong>Free cancellation options</strong><span>🎁 STAY15</span></div><div class="product-actions"><a class="explore" href="deal.html?brand=Booking.com&amp;offer=15%25%20Off">Explore ↗</a><a class="visit" href="https://booking.com" target="_blank" rel="noopener">Visit website ↗</a></div>
+      </article>
+      <article class="product-card" data-category="business email saas" data-search="fluentcrm email crm automation marketing wordpress">
+        <div class="product-top"><img src="https://www.google.com/s2/favicons?sz=256&amp;domain=fluentcrm.com" alt="FluentCRM logo" /><div><h2>FluentCRM</h2><p>Email marketing automation and CRM built for growing businesses.</p></div></div>
+        <div class="product-rating"><span>★★★★★</span><strong>4.7</strong><small>(774 reviews)</small></div><div class="product-tags"><span>Email</span><span>CRM</span><span>Automation</span></div><div class="product-price"><strong>Plans from $129/year</strong><span>🎁 CRM20</span></div><div class="product-actions"><a class="explore" href="deal.html?brand=FluentCRM&amp;offer=20%25%20Off">Explore ↗</a><a class="visit" href="https://fluentcrm.com" target="_blank" rel="noopener">Visit website ↗</a></div>
+      </article>
+      <article class="product-card" data-category="business booking scheduling saas" data-search="fluent booking scheduling appointments calendar business">
+        <div class="product-top"><img src="https://www.google.com/s2/favicons?sz=256&amp;domain=fluentbooking.com" alt="Fluent Booking logo" /><div><h2>Fluent Booking</h2><p>Flexible scheduling and appointment booking for teams and clients.</p></div></div>
+        <div class="product-rating"><span>★★★★★</span><strong>4.9</strong><small>(1,108 reviews)</small></div><div class="product-tags"><span>Scheduling</span><span>Calendar</span><span>Business</span></div><div class="product-price"><strong>Plans from $79/year</strong><span>🎁 BOOK20</span></div><div class="product-actions"><a class="explore" href="deal.html?brand=Fluent%20Booking&amp;offer=20%25%20Off">Explore ↗</a><a class="visit" href="https://fluentbooking.com" target="_blank" rel="noopener">Visit website ↗</a></div>
+      </article>
+    </div><p class="products-empty" hidden>No products match your search.</p></div></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer-grid">
+      <div class="site-footer-brand"><a href="index.html"><span>R</span><strong>Review Hubs<span class="brand-dot">.</span></strong></a><p>Independent reviews, practical buying guides and verified savings from the brands in our local directory.</p><small>Independent insights · Updated regularly</small></div>
+      <nav class="site-footer-column" aria-label="Platform links"><h2>Platform</h2><a href="products.html">Products</a><a href="coupons.html">Coupons</a><a href="blog.html">Review Blog</a></nav>
+      <nav class="site-footer-column" aria-label="Company links"><h2>Company</h2><a href="index.html#about">About us</a><a href="mailto:hello@reviewhubs.local">Contact</a><a href="mailto:hello@reviewhubs.local">Feedback</a></nav>
+      <nav class="site-footer-column" aria-label="Legal links"><h2>Legal</h2><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Affiliate Disclosure</a></nav>
+    </div>
+    <div class="container site-footer-bottom"><span>© 2026 Review Hubs. All rights reserved.</span><span>Made for clearer choices and smarter savings.</span></div>
+  </footer>
+  <script src="products.js"></script>
+</body>
+</html>
