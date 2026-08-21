@@ -11,7 +11,9 @@ const dataDir = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path
 const offersFile = path.join(dataDir, 'offers.json');
 const storesFile = path.join(dataDir, 'stores.json');
 const subscribersFile = path.join(dataDir, 'subscribers.json');
-const adminPassword = String(process.env.ADMIN_PASSWORD || '');
+// Keep compatibility with the misspelled Railway variable that existed before
+// the production backend was added. ADMIN_PASSWORD remains the canonical key.
+const adminPassword = String(process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWRD || '');
 const adminEmails = new Set(String(process.env.ADMIN_EMAILS || 'hn084933@gmail.com,ecorpenglishbtl@gmail.com')
   .split(',').map((email) => email.trim().toLowerCase()).filter(Boolean));
 const sessions = new Map();
