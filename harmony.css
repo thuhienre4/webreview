@@ -1679,3 +1679,72 @@ body.coupon-page {
 @media (max-width: 380px) {
   .product-actions { grid-template-columns: 1fr !important; }
 }
+
+/* Product mobile layout: override the desktop fit-content filter shell. */
+@media (max-width: 680px) {
+  .products-page .products-intro {
+    padding: 24px 0 14px;
+  }
+
+  .products-page .products-heading {
+    gap: 16px;
+  }
+
+  .products-page .products-heading h1 {
+    font-size: clamp(1.8rem, 9vw, 2.25rem);
+  }
+
+  .products-page .products-heading p {
+    margin-top: 8px;
+    font-size: .86rem;
+    line-height: 1.55;
+  }
+
+  .products-page .product-directory-tools,
+  .products-page .product-directory-search,
+  .products-page .product-sort,
+  .products-page .product-sort select {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .products-page .product-directory-search,
+  .products-page .product-sort select {
+    min-height: 44px;
+  }
+
+  .products-page .product-filters {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5px;
+    margin: 14px 0 0;
+    padding: 5px;
+    border-radius: 18px;
+  }
+
+  .products-page .product-filters button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 36px;
+    padding: 0 6px;
+    font-size: .68rem;
+  }
+
+  .products-page .products-directory {
+    padding-top: 4px;
+  }
+
+  .products-page .product-grid {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .products-page .product-card {
+    box-sizing: border-box;
+    border-radius: 16px;
+  }
+}
