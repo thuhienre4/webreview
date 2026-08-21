@@ -56,26 +56,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const copyCouponCode = async (code) => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(code);
+      return;
+    }
+
+    const field = document.createElement('textarea');
+    field.value = code;
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.select();
+    document.execCommand('copy');
+    field.remove();
+  };
+
   document.querySelectorAll('[data-copy-code]').forEach((button) => {
     button.addEventListener('click', async () => {
       const code = button.dataset.copyCode;
       try {
-        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(code);
-        else {
-          const field = document.createElement('textarea');
-          field.value = code;
-          field.style.position = 'fixed';
-          field.style.opacity = '0';
-          document.body.appendChild(field);
-          field.select();
-          document.execCommand('copy');
-          field.remove();
-        }
+        await copyCouponCode(code);
         const original = button.textContent;
         button.textContent = '✓';
         setTimeout(() => { button.textContent = original; }, 1200);
       } catch {
         button.title = `Code: ${code}`;
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-reveal-code]').forEach((button) => {
+    button.addEventListener('click', async (event) => {
+      event.preventDefault();
+      const code = button.dataset.revealCode;
+      if (!code) return;
+
+      button.textContent = code;
+      button.classList.add('code-revealed');
+      button.setAttribute('aria-label', `Coupon code ${code}. Click to copy again.`);
+
+      try {
+        await copyCouponCode(code);
+        button.title = `${code} copied`;
+      } catch {
+        button.title = `Coupon code: ${code}`;
       }
     });
   });

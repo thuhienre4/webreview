@@ -345,13 +345,13 @@
   }
 
   .hot-deals .deal-grid .deal-card .deal-cta::before {
-    content: "CLICK TO\A REVEAL CODE";
+    content: "GET CODE";
     position: static !important;
     inset: auto !important;
     display: block !important;
     background: none !important;
     color: #fff;
-    font-size: .36rem;
+    font-size: .48rem;
     font-weight: 900;
     line-height: .88;
     transform: none !important;
@@ -361,6 +361,18 @@
 
   .hot-deals .deal-grid .deal-card .deal-cta:hover::before {
     transform: none !important;
+  }
+
+  .hot-deals .deal-grid .deal-card .deal-cta.code-revealed {
+    justify-content: center !important;
+    padding-inline: 5px !important;
+    font-size: .5rem !important;
+    letter-spacing: .02em;
+  }
+
+  .hot-deals .deal-grid .deal-card .deal-cta.code-revealed::before,
+  .hot-deals .deal-grid .deal-card .deal-cta.code-revealed::after {
+    display: none !important;
   }
 
   .hot-deals .deal-grid .deal-card .deal-cta::after {
