@@ -437,3 +437,13 @@
   color: #fff;
   filter: brightness(.96);
 }
+
+/* Keep the featured carousel airy without visible card or section outlines. */
+.top-coupons::after {
+  display: none;
+}
+
+.top-coupons .feature-coupon,
+.top-coupons .feature-coupon:hover {
+  border-color: transparent !important;
+}
