@@ -17,13 +17,14 @@
   --ui-ease: cubic-bezier(.22, 1, .36, 1);
 }
 
-/* Lark-inspired background: clean white with restrained blue and cyan. */
+/* Lark brand wash: signature blue supported by cyan and soft violet. */
 body {
-  background-color: #f7faff !important;
+  background-color: #f3f7ff !important;
   background-image:
-    radial-gradient(ellipse 86% 62% at 3% 100%, rgba(51, 112, 255, .15) 0%, rgba(111, 199, 255, .09) 43%, transparent 72%),
-    radial-gradient(ellipse 72% 56% at 98% 100%, rgba(87, 150, 255, .1) 0%, rgba(130, 206, 255, .06) 46%, transparent 74%),
-    linear-gradient(180deg, #fff 0%, #fbfdff 34%, #f5f9ff 68%, #eef5ff 100%) !important;
+    radial-gradient(ellipse 88% 62% at 2% 100%, rgba(51, 112, 255, .22) 0%, rgba(78, 151, 255, .12) 42%, transparent 72%),
+    radial-gradient(ellipse 70% 52% at 98% 12%, rgba(20, 199, 224, .12) 0%, rgba(92, 213, 231, .055) 48%, transparent 74%),
+    radial-gradient(ellipse 64% 46% at 90% 100%, rgba(116, 91, 255, .1) 0%, transparent 69%),
+    linear-gradient(180deg, #fff 0%, #fbfdff 30%, #f3f7ff 65%, #eaf2ff 100%) !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
