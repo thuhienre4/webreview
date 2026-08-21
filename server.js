@@ -162,7 +162,13 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host || `${host}:${port}`}`);
 
     if (req.method === 'GET' && url.pathname === '/healthz') {
-      return json(res, 200, { ok: true, offers: readArray(offersFile).length, stores: readArray(storesFile).length, adminConfigured: Boolean(adminPassword) });
+      return json(res, 200, {
+        ok: true,
+        offers: readArray(offersFile).length,
+        stores: readArray(storesFile).length,
+        adminConfigured: Boolean(adminPassword),
+        adminVariableNames: Object.keys(process.env).filter((name) => name.startsWith('ADMIN_')).sort(),
+      });
     }
 
     if (req.method === 'POST' && url.pathname === '/api/login') {
