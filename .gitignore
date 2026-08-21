@@ -8,6 +8,7 @@ find_logos.py
 server*.log
 *.png
 !assets/product-shots/*-official.png
+!assets/illustrations/hot-deals-discount-tag.png
 .data/
 .env
 
