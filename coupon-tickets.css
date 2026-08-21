@@ -1,35 +1,27 @@
 /* Final coupon ticket treatment, loaded after the shared theme. */
-.hot-deals .deal-container {
+.hero-section {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
 }
-.hot-deals .deal-container::before {
+.hero-section::before {
   content: "";
   position: absolute;
-  z-index: -1;
-  top: 26px;
-  right: -18px;
-  width: clamp(280px, 31vw, 410px);
+  z-index: 0;
+  top: clamp(-190px, -12vw, -110px);
+  right: clamp(-150px, -7vw, -72px);
+  width: clamp(430px, 46vw, 680px);
   aspect-ratio: 1 / 1.12;
   pointer-events: none;
   background:
-    radial-gradient(circle at 52% 48%, rgba(115,116,245,.16), transparent 64%),
+    radial-gradient(circle at 52% 48%, rgba(115,116,245,.13), transparent 66%),
     url("assets/illustrations/hot-deals-discount-tag.png") center / contain no-repeat;
-  opacity: .78;
-  filter: drop-shadow(0 18px 30px rgba(94,101,205,.14));
+  opacity: .3;
+  filter: saturate(.9) drop-shadow(0 20px 38px rgba(94,101,205,.12));
 }
-.hot-deals .section-kicker,
-.hot-deals .deal-title,
-.hot-deals .deal-subtitle,
-.hot-deals .deal-disclaimer,
-.hot-deals .deal-grid,
-.hot-deals .deal-more-wrap {
+.hero-section .hero-inner {
   position: relative;
   z-index: 1;
-}
-@media (min-width: 901px) {
-  .hot-deals .deal-subtitle,
-  .hot-deals .deal-disclaimer { max-width: calc(100% - clamp(290px, 31vw, 410px)); }
 }
 
 .hot-deals .deal-grid .deal-card {
@@ -115,11 +107,11 @@
 .hot-deals .deal-grid .deal-card .deal-cta::after { color: #fff !important; }
 
 @media (max-width: 680px) {
-  .hot-deals .deal-container::before {
-    top: 72px;
-    right: -48px;
-    width: 210px;
-    opacity: .2;
+  .hero-section::before {
+    top: 10px;
+    right: -135px;
+    width: 330px;
+    opacity: .13;
   }
   .hot-deals .deal-container { width: 100%; max-width: 100%; padding-inline: 12px; }
   .hot-deals .deal-grid { width: 100%; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
