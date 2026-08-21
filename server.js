@@ -2,6 +2,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const dns = require('dns').promises;
+const net = require('net');
 
 const root = __dirname;
 const host = process.env.HOST || '0.0.0.0';
@@ -11,6 +13,7 @@ const dataDir = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path
 const offersFile = path.join(dataDir, 'offers.json');
 const storesFile = path.join(dataDir, 'stores.json');
 const subscribersFile = path.join(dataDir, 'subscribers.json');
+const postsFile = path.join(dataDir, 'posts.json');
 // Keep compatibility with the misspelled Railway variable that existed before
 // the production backend was added. ADMIN_PASSWORD remains the canonical key.
 const adminPassword = String(process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWRD || '');
@@ -28,7 +31,7 @@ const mimeTypes = {
 
 function ensureData() {
   fs.mkdirSync(dataDir, { recursive: true });
-  for (const [target, seed] of [[offersFile, 'offers.json'], [storesFile, 'stores.json']]) {
+  for (const [target, seed] of [[offersFile, 'offers.json'], [storesFile, 'stores.json'], [postsFile, 'posts.json']]) {
     if (!fs.existsSync(target)) fs.copyFileSync(path.join(root, 'seed', seed), target);
   }
   if (!fs.existsSync(subscribersFile)) fs.writeFileSync(subscribersFile, '[]\n');
@@ -100,6 +103,12 @@ function safeUrl(value) {
   if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Only HTTP/HTTPS links are allowed.');
   return parsed.toString();
 }
+function safeImageUrl(value) {
+  const image = text(value, 1500);
+  if (!image) return '';
+  if (image.startsWith('/') && !image.startsWith('//')) return image;
+  return safeUrl(image);
+}
 function slug(value) { return text(value, 160).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 
 function cleanOffer(payload, previous = {}) {
@@ -121,6 +130,162 @@ function cleanOffer(payload, previous = {}) {
     clicks: Number(previous.clicks || 0), reveals: Number(previous.reveals || 0),
     createdAt: previous.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString(),
   };
+}
+
+function firstValue(source, keys, fallback = '') {
+  for (const key of keys) {
+    if (source[key] !== undefined && source[key] !== null && String(source[key]).trim() !== '') return source[key];
+  }
+  return fallback;
+}
+
+function booleanValue(value, fallback = false) {
+  if (typeof value === 'boolean') return value;
+  if (value === undefined || value === null || value === '') return fallback;
+  return !['0', 'false', 'no', 'off', 'hidden', 'inactive'].includes(String(value).trim().toLowerCase());
+}
+
+function normalizeBatchOffer(source = {}) {
+  const item = Object.fromEntries(Object.entries(source).map(([key, value]) => [String(key).trim().toLowerCase().replace(/[\s-]+/g, '_'), value]));
+  const rawType = String(firstValue(item, ['type', 'offer_type', 'kind'], 'code')).toLowerCase();
+  return {
+    brand: firstValue(item, ['brand', 'store', 'store_name', 'merchant', 'merchant_name']),
+    domain: firstValue(item, ['domain', 'store_domain', 'merchant_domain', 'website']),
+    title: firstValue(item, ['title', 'name', 'offer_title', 'coupon_title', 'deal_title']),
+    type: ['deal', 'promotion', 'sale'].includes(rawType) ? 'deal' : 'code',
+    code: firstValue(item, ['code', 'coupon_code', 'promo_code', 'voucher_code']),
+    discount: firstValue(item, ['discount', 'offer', 'discount_value', 'saving']),
+    link: firstValue(item, ['link', 'url', 'affiliate_link', 'affiliate_url', 'destination_url']),
+    category: firstValue(item, ['category', 'industry'], 'Other'),
+    description: firstValue(item, ['description', 'review', 'details', 'terms']),
+    expiry: firstValue(item, ['expiry', 'expires', 'expiration', 'expiration_date', 'end_date']),
+    logo: firstValue(item, ['logo', 'logo_url', 'image']),
+    order: Number(firstValue(item, ['order', 'sort_order', 'priority'], 0)) || 0,
+    visible: booleanValue(firstValue(item, ['visible', 'active', 'published', 'status'], true), true),
+    featured: booleanValue(firstValue(item, ['featured', 'is_featured'], false), false),
+  };
+}
+
+function offerFingerprint(offer) {
+  return [offer.brand, offer.code || offer.title, offer.link].map((value) => String(value || '').trim().toLowerCase()).join('|');
+}
+
+function prepareBatchOffers(items, currentOffers = []) {
+  const existing = new Set(currentOffers.map(offerFingerprint));
+  const accepted = new Set();
+  const ready = [];
+  const errors = [];
+  const duplicates = [];
+  items.slice(0, 500).forEach((source, index) => {
+    try {
+      if (!source || typeof source !== 'object' || Array.isArray(source)) throw new Error('Row must be an object.');
+      const offer = cleanOffer(normalizeBatchOffer(source));
+      const fingerprint = offerFingerprint(offer);
+      if (existing.has(fingerprint) || accepted.has(fingerprint)) {
+        duplicates.push({ row: index + 2, brand: offer.brand, title: offer.title, reason: existing.has(fingerprint) ? 'Already exists' : 'Repeated in upload' });
+        return;
+      }
+      accepted.add(fingerprint);
+      ready.push(offer);
+    } catch (error) {
+      errors.push({ row: index + 2, title: text(source?.title || source?.name, 160), error: error.message });
+    }
+  });
+  return { items: ready, errors, duplicates, total: items.length };
+}
+
+function cleanPost(payload, previous = {}) {
+  const title = text(payload.title ?? previous.title, 240);
+  if (!title) throw new Error('Post title is required.');
+  return {
+    ...previous,
+    id: previous.id || text(payload.id, 100) || identifier('post'),
+    title,
+    slug: slug(payload.slug ?? previous.slug ?? title),
+    excerpt: text(payload.excerpt ?? previous.excerpt, 600),
+    content: text(payload.content ?? previous.content, 20_000),
+    category: text(payload.category ?? previous.category, 120) || 'Guides',
+    brand: text(payload.brand ?? previous.brand, 160),
+    image: safeImageUrl(payload.image ?? previous.image),
+    sourceUrl: payload.sourceUrl || previous.sourceUrl ? safeUrl(payload.sourceUrl ?? previous.sourceUrl) : '',
+    published: payload.published === true,
+    featured: payload.featured === true,
+    publishedAt: text(payload.publishedAt ?? previous.publishedAt, 40) || new Date().toISOString(),
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function isPrivateAddress(address) {
+  const value = String(address || '').toLowerCase();
+  if (value === '::1' || value === '0.0.0.0' || value.startsWith('fe80:') || value.startsWith('fc') || value.startsWith('fd')) return true;
+  const ipv4 = value.replace(/^::ffff:/, '');
+  const parts = ipv4.split('.').map(Number);
+  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part))) return false;
+  return parts[0] === 10 || parts[0] === 127 || parts[0] === 0 || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || (parts[0] === 192 && parts[1] === 168);
+}
+
+async function validateOfficialUrl(value) {
+  const parsed = new URL(safeUrl(value));
+  if (parsed.username || parsed.password || parsed.port) throw new Error('Official URL must not contain credentials or a custom port.');
+  if (parsed.hostname === 'localhost' || parsed.hostname.endsWith('.local')) throw new Error('Local URLs are not allowed.');
+  if (net.isIP(parsed.hostname) && isPrivateAddress(parsed.hostname)) throw new Error('Private network URLs are not allowed.');
+  const addresses = await dns.lookup(parsed.hostname, { all: true });
+  if (!addresses.length || addresses.some((item) => isPrivateAddress(item.address))) throw new Error('The official URL resolves to a private network.');
+  return parsed;
+}
+
+function decodeHtml(value) {
+  return String(value || '').replace(/&amp;/gi, '&').replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/\s+/g, ' ').trim();
+}
+
+function metaValue(html, key) {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const patterns = [
+    new RegExp(`<meta[^>]+(?:property|name)=["']${escaped}["'][^>]+content=["']([^"']+)["']`, 'i'),
+    new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${escaped}["']`, 'i'),
+  ];
+  return decodeHtml(patterns.map((pattern) => html.match(pattern)?.[1]).find(Boolean) || '');
+}
+
+async function extractOfficialMetadata(sourceUrl) {
+  let current = await validateOfficialUrl(sourceUrl);
+  let response;
+  for (let redirect = 0; redirect < 4; redirect += 1) {
+    response = await fetch(current, { redirect: 'manual', signal: AbortSignal.timeout(12_000), headers: { 'User-Agent': 'ReviewHubsBot/1.0 (+official metadata preview)', Accept: 'text/html,application/xhtml+xml' } });
+    if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
+      current = await validateOfficialUrl(new URL(response.headers.get('location'), current).toString());
+      continue;
+    }
+    break;
+  }
+  if (!response?.ok) {
+    const brand = current.hostname.replace(/^www\./, '');
+    const excerpt = `A practical overview of ${brand}, its main features and the details shoppers should review before choosing an offer.`;
+    return {
+      sourceUrl: current.toString(),
+      title: `${brand} Review: Features, Offers and Buying Notes`,
+      excerpt,
+      content: `${excerpt}\n\nThis Review Hubs guide takes an independent look at the official product experience, who it may suit and the important pricing, availability and offer terms to verify directly on the merchant website.`,
+      image: `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(current.hostname)}`,
+      brand,
+      category: 'Reviews',
+      warning: `The official page blocked metadata extraction (HTTP ${response?.status || 'error'}), so a domain-based draft and logo fallback were used.`,
+    };
+  }
+  if (!String(response.headers.get('content-type') || '').includes('text/html')) throw new Error('Official URL must return an HTML page.');
+  const declaredSize = Number(response.headers.get('content-length') || 0);
+  if (declaredSize > 2_000_000) throw new Error('Official page is too large to extract safely.');
+  const html = (await response.text()).slice(0, 2_000_000);
+  const title = metaValue(html, 'og:title') || metaValue(html, 'twitter:title') || decodeHtml(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]);
+  const description = metaValue(html, 'og:description') || metaValue(html, 'description') || metaValue(html, 'twitter:description');
+  const rawImage = metaValue(html, 'og:image') || metaValue(html, 'twitter:image');
+  const image = rawImage ? new URL(rawImage, current).toString() : `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(current.hostname)}`;
+  const brand = decodeHtml(metaValue(html, 'og:site_name')) || current.hostname.replace(/^www\./, '');
+  const draftTitle = title || `${brand} Review: Features, Offers and Buying Notes`;
+  const excerpt = description || `A practical overview of ${brand}, its main features and the details shoppers should review before choosing an offer.`;
+  const content = `${excerpt}\n\nThis Review Hubs guide takes an independent look at the official product experience, who it may suit and the important pricing, availability and offer terms to verify directly on the merchant website.`;
+  return { sourceUrl: current.toString(), title: draftTitle, excerpt, content, image, brand, category: 'Reviews' };
 }
 
 function cleanStore(payload, previous = {}) {
@@ -146,7 +311,7 @@ function serveStatic(req, res, pathname) {
   if (pathname === '/') pathname = '/index.html';
   if (pathname === '/admin') pathname = '/admin.html';
   const decoded = decodeURIComponent(pathname);
-  if (decoded.includes('\0') || decoded.startsWith('/seed/') || /^\/(server\.js|package(?:-lock)?\.json|Procfile|\.env)/i.test(decoded)) return send(res, 404, 'Not found');
+  if (decoded.includes('\0') || decoded.startsWith('/seed/') || decoded.startsWith('/.data/') || /^\/(server\.js|package(?:-lock)?\.json|Procfile|\.env)/i.test(decoded)) return send(res, 404, 'Not found');
   const file = path.resolve(root, `.${decoded}`);
   if (!file.startsWith(`${root}${path.sep}`) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return send(res, 404, 'Not found');
   const content = fs.readFileSync(file);
@@ -197,6 +362,17 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, readArray(storesFile).filter((store) => store.visible !== false));
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/blog') {
+      const posts = readArray(postsFile).filter((post) => post.published === true).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+      return json(res, 200, posts);
+    }
+
+    const publicPostMatch = url.pathname.match(/^\/api\/blog\/([^/]+)$/);
+    if (req.method === 'GET' && publicPostMatch) {
+      const post = readArray(postsFile).find((item) => item.slug === decodeURIComponent(publicPostMatch[1]) && item.published === true);
+      return post ? json(res, 200, post) : json(res, 404, { error: 'Post not found.' });
+    }
+
     const codeMatch = url.pathname.match(/^\/api\/offers\/([^/]+)\/code$/);
     if (req.method === 'GET' && codeMatch) {
       const offers = readArray(offersFile); const offer = offers.find((item) => item.id === decodeURIComponent(codeMatch[1]) && item.visible !== false);
@@ -227,16 +403,56 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, { offers: offers.length, codes: offers.filter((o) => o.type === 'code').length, deals: offers.filter((o) => o.type === 'deal').length, stores: stores.length, subscribers: subscribers.length, clicks: offers.reduce((n, o) => n + Number(o.clicks || 0), 0), reveals: offers.reduce((n, o) => n + Number(o.reveals || 0), 0) });
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/admin/blog') {
+      if (!requireAdmin(req, res)) return;
+      return json(res, 200, readArray(postsFile));
+    }
+    if (req.method === 'POST' && url.pathname === '/api/admin/blog/extract') {
+      if (!requireAdmin(req, res)) return;
+      const payload = await body(req, 30000);
+      if (!text(payload.sourceUrl, 1500)) return json(res, 400, { error: 'Official page URL is required.' });
+      return json(res, 200, await extractOfficialMetadata(payload.sourceUrl));
+    }
+    if (req.method === 'POST' && url.pathname === '/api/admin/blog') {
+      if (!requireAdmin(req, res)) return;
+      const posts = readArray(postsFile);
+      const post = cleanPost(await body(req, 200000));
+      posts.unshift(post);
+      writeArray(postsFile, posts);
+      return json(res, 201, post);
+    }
+    const adminPostMatch = url.pathname.match(/^\/api\/admin\/blog\/([^/]+)$/);
+    if (adminPostMatch && ['PUT', 'DELETE'].includes(req.method)) {
+      if (!requireAdmin(req, res)) return;
+      const posts = readArray(postsFile);
+      const index = posts.findIndex((item) => item.id === decodeURIComponent(adminPostMatch[1]));
+      if (index < 0) return json(res, 404, { error: 'Post not found.' });
+      if (req.method === 'DELETE') {
+        const [deleted] = posts.splice(index, 1);
+        writeArray(postsFile, posts);
+        return json(res, 200, deleted);
+      }
+      posts[index] = cleanPost(await body(req, 200000), posts[index]);
+      writeArray(postsFile, posts);
+      return json(res, 200, posts[index]);
+    }
     if (req.method === 'GET' && url.pathname === '/api/admin/offers') {
       if (!requireAdmin(req, res)) return; return json(res, 200, readArray(offersFile));
     }
     if (req.method === 'POST' && url.pathname === '/api/admin/offers') {
       if (!requireAdmin(req, res)) return; const offers = readArray(offersFile); const offer = cleanOffer(await body(req)); offers.unshift(offer); writeArray(offersFile, offers); return json(res, 201, offer);
     }
+    if (req.method === 'POST' && url.pathname === '/api/admin/offers/batch/preview') {
+      if (!requireAdmin(req, res)) return; const payload = await body(req, 5_000_000); const items = Array.isArray(payload) ? payload : payload.items;
+      if (!Array.isArray(items) || !items.length || items.length > 500) return json(res, 400, { error: 'Supply between 1 and 500 offers.' });
+      return json(res, 200, prepareBatchOffers(items, readArray(offersFile)));
+    }
     if (req.method === 'POST' && url.pathname === '/api/admin/offers/batch') {
       if (!requireAdmin(req, res)) return; const payload = await body(req, 5_000_000); const items = Array.isArray(payload) ? payload : payload.items;
       if (!Array.isArray(items) || !items.length || items.length > 500) return json(res, 400, { error: 'Supply between 1 and 500 offers.' });
-      const offers = readArray(offersFile); const created = items.map((item) => cleanOffer(item)); writeArray(offersFile, [...created, ...offers]); return json(res, 201, { created, total: created.length });
+      const offers = readArray(offersFile); const prepared = prepareBatchOffers(items, offers);
+      if (prepared.items.length) writeArray(offersFile, [...prepared.items, ...offers]);
+      return json(res, 201, { created: prepared.items, errors: prepared.errors, duplicates: prepared.duplicates, total: prepared.total, imported: prepared.items.length });
     }
     const adminOfferMatch = url.pathname.match(/^\/api\/admin\/offers\/([^/]+)$/);
     if (adminOfferMatch && ['PUT', 'DELETE'].includes(req.method)) {

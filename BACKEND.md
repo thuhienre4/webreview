@@ -1,18 +1,23 @@
 # Review Hubs backend
 
-The site now runs as a Node.js service and keeps the existing HTML/CSS frontend.
+The site runs as a Node.js service and keeps the existing HTML/CSS frontend.
 
 ## Routes
 
-- `/healthz` — service health
-- `/api/offers` — public offers with coupon codes hidden
-- `/api/offers/:id/code` — reveal one active coupon code
-- `/api/stores` — public stores
-- `/go/:id` — tracked affiliate redirect
-- `/admin` — protected store and offer manager
+- `/healthz` - service health
+- `/api/offers` - public offers with coupon codes hidden
+- `/api/offers/:id/code` - reveal one active coupon code
+- `/api/stores` - public stores
+- `/api/blog` - published blog posts
+- `/go/:id` - tracked affiliate redirect
+- `/admin` - protected store and offer manager
+- `/admin-blog.html` - protected blog CMS
 
-Admin supports dashboard metrics, store CRUD, coupon/deal CRUD, JSON batch import,
-visibility controls, featured offers, ordering, and click/reveal counts.
+Admin supports dashboard metrics, store CRUD, coupon/deal CRUD, CSV/JSON batch
+preview and import, visibility controls, featured offers, ordering, and click/reveal
+counts. Blog CMS supports draft/publish CRUD and safe extraction of public title,
+description, and Open Graph image metadata from an official URL. Sites that block
+metadata requests receive a domain-based draft and logo fallback for manual review.
 
 ## Local run
 
