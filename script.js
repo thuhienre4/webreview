@@ -55,4 +55,21 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = `products.html?search=${search}`;
     });
   });
+
+  // Keep homepage coupon links in sync with the admin-managed API.
+  fetch('/api/offers', { cache: 'no-store' })
+    .then((response) => response.ok ? response.json() : [])
+    .then((offers) => {
+      document.querySelectorAll('a[href^="deal.html?"]').forEach((link) => {
+        const current = new URL(link.href, window.location.href);
+        const brand = current.searchParams.get('brand') || '';
+        const offer = offers.find((item) => item.brand.toLowerCase() === brand.toLowerCase());
+        if (!offer) return;
+        current.searchParams.set('id', offer.id);
+        current.searchParams.set('offer', offer.discount || '');
+        current.searchParams.set('domain', offer.domain || '');
+        link.href = `${current.pathname.split('/').pop()}?${current.searchParams.toString()}`;
+      });
+    })
+    .catch(() => {});
 });

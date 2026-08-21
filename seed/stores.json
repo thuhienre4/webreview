@@ -1,0 +1,8 @@
+[
+  {"id":"store_lovo","name":"LOVO","domain":"lovo.ai","slug":"lovo","category":"AI Tools & SaaS","description":"AI voice generation and creative audio tools.","logo":"https://www.google.com/s2/favicons?sz=256&domain=lovo.ai","visible":true},
+  {"id":"store_lala","name":"Lala AI","domain":"lala.ai","slug":"lala-ai","category":"AI Tools & SaaS","description":"Creative AI tools and workflow automation.","logo":"https://www.google.com/s2/favicons?sz=256&domain=lala.ai","visible":true},
+  {"id":"store_travelstart","name":"Travelstart","domain":"travelstart.com","slug":"travelstart","category":"Travel & Hotels","description":"Flight search and travel booking offers.","logo":"https://www.google.com/s2/favicons?sz=256&domain=travelstart.com","visible":true},
+  {"id":"store_booking","name":"Booking.com","domain":"booking.com","slug":"booking-com","category":"Travel & Hotels","description":"Accommodation and selected-stay promotions.","logo":"https://www.google.com/s2/favicons?sz=256&domain=booking.com","visible":true},
+  {"id":"store_fluentcrm","name":"FluentCRM","domain":"fluentcrm.com","slug":"fluentcrm","category":"Business & Marketing","description":"WordPress CRM and email automation.","logo":"https://www.google.com/s2/favicons?sz=256&domain=fluentcrm.com","visible":true},
+  {"id":"store_fluentbooking","name":"Fluent Booking","domain":"fluentbooking.com","slug":"fluent-booking","category":"Business & Marketing","description":"Scheduling and appointment booking for WordPress.","logo":"https://www.google.com/s2/favicons?sz=256&domain=fluentbooking.com","visible":true}
+]

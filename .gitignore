@@ -8,6 +8,8 @@ find_logos.py
 server*.log
 *.png
 !assets/product-shots/*-official.png
+.data/
+.env
 
 # OS/editor files
 .DS_Store

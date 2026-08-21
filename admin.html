@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Review Hubs Admin</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07110f;--panel:#0e1c18;--line:#264139;--lime:#c9ff5a;--text:#f3f7f4;--muted:#9eb0aa;--danger:#ff7b7b}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#163b30,transparent 34%),var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}button,input,select,textarea{font:inherit}
+    .hidden{display:none!important}.login{min-height:100vh;display:grid;place-items:center;padding:24px}.login-card,.panel{background:rgba(14,28,24,.96);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 70px #0008}.login-card{width:min(440px,100%);padding:32px}.mark{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:var(--lime);color:#10200d;font-weight:900;font-size:24px}.login h1{margin:18px 0 4px;font-size:30px}.muted{color:var(--muted)}label{display:grid;gap:7px;margin:14px 0;font-weight:700}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#07130f;color:var(--text);padding:11px 12px}textarea{min-height:100px;resize:vertical}.button{border:0;border-radius:10px;background:var(--lime);color:#10200d;font-weight:900;padding:11px 15px;cursor:pointer}.button.secondary{background:#20342e;color:var(--text)}.button.danger{background:#3e2020;color:#ffb1b1}.button.small{padding:7px 10px;font-size:12px}.error{color:#ffaaa2;min-height:20px}
+    .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}.side{padding:22px;border-right:1px solid var(--line);background:#091611;position:sticky;top:0;height:100vh}.brand{display:flex;gap:11px;align-items:center;font-size:18px;font-weight:900}.brand .mark{width:38px;height:38px;font-size:18px}.nav{display:grid;gap:7px;margin-top:30px}.nav button{border:0;text-align:left;padding:12px;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}.nav button.active{background:#1b3029;color:var(--lime)}.side-bottom{position:absolute;bottom:20px;left:22px;right:22px}.main{padding:28px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:16px}.top h1{margin:0;font-size:28px}.metrics{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:12px;margin:22px 0}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;background:#0d1c17}.metric strong{display:block;font-size:24px;color:var(--lime)}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px}.panel{padding:18px;overflow:hidden}.panel h2{margin:0 0 14px}.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}.toolbar input{max-width:340px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px}th,td{text-align:left;border-bottom:1px solid #1e342d;padding:11px 8px;vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase}.tag{display:inline-block;padding:3px 8px;border-radius:99px;background:#1b352b;color:var(--lime);font-size:11px}.actions{display:flex;gap:6px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.form-grid .wide{grid-column:1/-1}.check{display:flex;align-items:center;gap:8px}.check input{width:auto}.form-actions{display:flex;gap:8px;margin-top:14px}.batch{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.toast{position:fixed;right:22px;bottom:22px;padding:12px 16px;background:var(--lime);color:#10200d;border-radius:10px;font-weight:900;box-shadow:0 10px 40px #0008}
+    @media(max-width:1050px){.metrics{grid-template-columns:repeat(3,1fr)}.workspace{grid-template-columns:1fr}.app{grid-template-columns:78px 1fr}.side{padding:16px 10px}.brand strong,.nav span,.side-bottom span{display:none}.brand{justify-content:center}.side-bottom{left:10px;right:10px}.nav button{text-align:center}.main{padding:20px}}
+    @media(max-width:650px){.app{display:block}.side{position:static;width:100%;height:auto;display:flex;align-items:center;gap:12px;border-right:0;border-bottom:1px solid var(--line)}.brand{display:none}.nav{display:flex;margin:0;flex:1}.side-bottom{position:static}.main{padding:14px}.metrics{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.form-grid .wide{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <section id="login" class="login">
+    <form id="login-form" class="login-card">
+      <div class="mark">R</div><h1>Review Hubs Admin</h1><p class="muted">Manage stores, coupon codes, deals and tracking.</p>
+      <label>Email<input name="email" type="email" autocomplete="username" required /></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required /></label>
+      <p id="login-error" class="error"></p><button class="button" type="submit">Sign in</button>
+    </form>
+  </section>
+
+  <div id="app" class="app hidden">
+    <aside class="side"><div class="brand"><div class="mark">R</div><strong>Review Hubs</strong></div>
+      <nav class="nav"><button class="active" data-view="offers">▦ <span>Coupons & Deals</span></button><button data-view="stores">◫ <span>Stores</span></button></nav>
+      <div class="side-bottom"><button id="logout" class="button secondary" type="button">↪ <span>Log out</span></button></div>
+    </aside>
+    <main class="main">
+      <header class="top"><div><h1 id="page-title">Coupons & Deals</h1><p id="admin-email" class="muted"></p></div><a class="button secondary" href="/" target="_blank" rel="noopener">View site</a></header>
+      <section id="metrics" class="metrics"></section>
+
+      <section id="offers-view" class="workspace">
+        <div class="panel"><div class="toolbar"><input id="offer-search" type="search" placeholder="Search brand, title or code" /><button id="reload" class="button secondary" type="button">Refresh</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Offer</th><th>Type</th><th>Discount</th><th>Visible</th><th>Stats</th><th>Actions</th></tr></thead><tbody id="offer-rows"></tbody></table></div>
+        </div>
+        <aside class="panel"><h2 id="offer-form-title">Add offer</h2><form id="offer-form"><input name="id" type="hidden" />
+          <div class="form-grid"><label>Brand<input name="brand" required /></label><label>Domain<input name="domain" placeholder="example.com" /></label>
+            <label class="wide">Title<input name="title" required /></label><label>Type<select name="type"><option value="code">Coupon code</option><option value="deal">Deal</option></select></label><label>Code<input name="code" /></label>
+            <label>Discount<input name="discount" placeholder="20% Off" /></label><label>Category<input name="category" value="Other" /></label><label class="wide">Affiliate link<input name="link" type="url" required /></label>
+            <label class="wide">Description<textarea name="description"></textarea></label><label>Expiry<input name="expiry" placeholder="YYYY-MM-DD" /></label><label>Order<input name="order" type="number" value="0" /></label>
+            <label class="check"><input name="visible" type="checkbox" checked /> Visible</label><label class="check"><input name="featured" type="checkbox" /> Featured</label></div>
+          <div class="form-actions"><button class="button" type="submit">Save offer</button><button id="offer-cancel" class="button secondary hidden" type="button">Cancel</button></div></form>
+          <div class="batch"><h2>Batch import</h2><p class="muted">Paste a JSON array using the same fields as the form.</p><textarea id="batch-json" placeholder='[{"brand":"Example","title":"20% Off","type":"code","code":"SAVE20","link":"https://example.com"}]'></textarea><button id="batch-import" class="button secondary" type="button">Import JSON</button></div>
+        </aside>
+      </section>
+
+      <section id="stores-view" class="workspace hidden">
+        <div class="panel"><div class="table-wrap"><table><thead><tr><th>Store</th><th>Domain</th><th>Category</th><th>Visible</th><th>Actions</th></tr></thead><tbody id="store-rows"></tbody></table></div></div>
+        <aside class="panel"><h2 id="store-form-title">Add store</h2><form id="store-form"><input name="id" type="hidden" /><label>Name<input name="name" required /></label><label>Domain<input name="domain" required /></label><label>Slug<input name="slug" /></label><label>Category<input name="category" value="Other" /></label><label>Logo URL<input name="logo" type="url" /></label><label>Description<textarea name="description"></textarea></label><label class="check"><input name="visible" type="checkbox" checked /> Visible</label><div class="form-actions"><button class="button" type="submit">Save store</button><button id="store-cancel" class="button secondary hidden" type="button">Cancel</button></div></form></aside>
+      </section>
+    </main>
+  </div><div id="toast" class="toast hidden"></div>
+  <script>
+    const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+    let offers=[],stores=[]; const escapeHtml=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const api=async(url,options={})=>{const response=await fetch(url,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});const value=await response.json().catch(()=>({}));if(!response.ok)throw new Error(value.error||`Request failed (${response.status})`);return value};
+    const toast=message=>{const node=$('#toast');node.textContent=message;node.classList.remove('hidden');setTimeout(()=>node.classList.add('hidden'),2200)};
+    const formObject=form=>Object.fromEntries(new FormData(form));
+    async function boot(){try{const current=await api('/api/admin/session');$('#login').classList.add('hidden');$('#app').classList.remove('hidden');$('#admin-email').textContent=current.email;await refresh()}catch{$('#login').classList.remove('hidden');$('#app').classList.add('hidden')}}
+    async function refresh(){const [dashboard,nextOffers,nextStores]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/offers'),api('/api/admin/stores')]);offers=nextOffers;stores=nextStores;renderMetrics(dashboard);renderOffers();renderStores()}
+    function renderMetrics(d){$('#metrics').innerHTML=[['Offers',d.offers],['Codes',d.codes],['Deals',d.deals],['Stores',d.stores],['Clicks',d.clicks],['Reveals',d.reveals]].map(([k,v])=>`<article class="metric"><span>${k}</span><strong>${v}</strong></article>`).join('')}
+    function renderOffers(){const q=$('#offer-search').value.toLowerCase();$('#offer-rows').innerHTML=offers.filter(o=>[o.brand,o.title,o.code].join(' ').toLowerCase().includes(q)).map(o=>`<tr><td><strong>${escapeHtml(o.brand)}</strong><br><span class="muted">${escapeHtml(o.title)}</span></td><td><span class="tag">${escapeHtml(o.type)}</span></td><td>${escapeHtml(o.discount)}</td><td>${o.visible!==false?'Yes':'No'}</td><td>${o.clicks||0} clicks<br>${o.reveals||0} reveals</td><td><div class="actions"><button class="button secondary small" data-edit-offer="${o.id}">Edit</button><button class="button danger small" data-delete-offer="${o.id}">Delete</button></div></td></tr>`).join('')||'<tr><td colspan="6">No offers found.</td></tr>'}
+    function renderStores(){$('#store-rows').innerHTML=stores.map(s=>`<tr><td><strong>${escapeHtml(s.name)}</strong></td><td>${escapeHtml(s.domain)}</td><td>${escapeHtml(s.category)}</td><td>${s.visible!==false?'Yes':'No'}</td><td><div class="actions"><button class="button secondary small" data-edit-store="${s.id}">Edit</button><button class="button danger small" data-delete-store="${s.id}">Delete</button></div></td></tr>`).join('')||'<tr><td colspan="5">No stores found.</td></tr>'}
+    function resetOffer(){const f=$('#offer-form');f.reset();f.id.value='';f.category.value='Other';f.order.value='0';f.visible.checked=true;$('#offer-form-title').textContent='Add offer';$('#offer-cancel').classList.add('hidden')}
+    function resetStore(){const f=$('#store-form');f.reset();f.id.value='';f.category.value='Other';f.visible.checked=true;$('#store-form-title').textContent='Add store';$('#store-cancel').classList.add('hidden')}
+    $('#login-form').addEventListener('submit',async e=>{e.preventDefault();$('#login-error').textContent='';try{await api('/api/login',{method:'POST',body:JSON.stringify(formObject(e.currentTarget))});await boot()}catch(error){$('#login-error').textContent=error.message}});
+    $('#logout').addEventListener('click',async()=>{await api('/api/logout',{method:'POST',body:'{}'});location.reload()});$('#reload').addEventListener('click',refresh);$('#offer-search').addEventListener('input',renderOffers);
+    $$('.nav button').forEach(button=>button.addEventListener('click',()=>{$$('.nav button').forEach(b=>b.classList.remove('active'));button.classList.add('active');const view=button.dataset.view;$('#offers-view').classList.toggle('hidden',view!=='offers');$('#stores-view').classList.toggle('hidden',view!=='stores');$('#page-title').textContent=view==='offers'?'Coupons & Deals':'Stores'}));
+    $('#offer-form').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,p=formObject(f),id=p.id;delete p.id;p.visible=f.visible.checked;p.featured=f.featured.checked;try{await api(id?`/api/admin/offers/${encodeURIComponent(id)}`:'/api/admin/offers',{method:id?'PUT':'POST',body:JSON.stringify(p)});resetOffer();await refresh();toast('Offer saved')}catch(error){alert(error.message)}});$('#offer-cancel').addEventListener('click',resetOffer);
+    $('#offer-rows').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit-offer]'),del=e.target.closest('[data-delete-offer]');if(edit){const o=offers.find(x=>x.id===edit.dataset.editOffer),f=$('#offer-form');Object.entries(o).forEach(([k,v])=>{if(f.elements[k]&&f.elements[k].type!=='checkbox')f.elements[k].value=v??''});f.visible.checked=o.visible!==false;f.featured.checked=o.featured===true;$('#offer-form-title').textContent='Edit offer';$('#offer-cancel').classList.remove('hidden');scrollTo({top:0,behavior:'smooth'})}if(del&&confirm('Delete this offer?')){await api(`/api/admin/offers/${encodeURIComponent(del.dataset.deleteOffer)}`,{method:'DELETE'});await refresh();toast('Offer deleted')}});
+    $('#batch-import').addEventListener('click',async()=>{try{const items=JSON.parse($('#batch-json').value);const result=await api('/api/admin/offers/batch',{method:'POST',body:JSON.stringify({items})});$('#batch-json').value='';await refresh();toast(`${result.total} offers imported`)}catch(error){alert(error.message)}});
+    $('#store-form').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,p=formObject(f),id=p.id;delete p.id;p.visible=f.visible.checked;try{await api(id?`/api/admin/stores/${encodeURIComponent(id)}`:'/api/admin/stores',{method:id?'PUT':'POST',body:JSON.stringify(p)});resetStore();await refresh();toast('Store saved')}catch(error){alert(error.message)}});$('#store-cancel').addEventListener('click',resetStore);
+    $('#store-rows').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit-store]'),del=e.target.closest('[data-delete-store]');if(edit){const s=stores.find(x=>x.id===edit.dataset.editStore),f=$('#store-form');Object.entries(s).forEach(([k,v])=>{if(f.elements[k]&&f.elements[k].type!=='checkbox')f.elements[k].value=v??''});f.visible.checked=s.visible!==false;$('#store-form-title').textContent='Edit store';$('#store-cancel').classList.remove('hidden')}if(del&&confirm('Delete this store?')){await api(`/api/admin/stores/${encodeURIComponent(del.dataset.deleteStore)}`,{method:'DELETE'});await refresh();toast('Store deleted')}});
+    boot();
+  </script>
+</body></html>
