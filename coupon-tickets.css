@@ -14,10 +14,11 @@
 }
 .hot-deals .deal-grid .deal-visual::after {
   content: "LIMITED OFFER";
-  position: absolute;
-  left: 5px;
-  right: 5px;
-  bottom: 50px;
+  position: static;
+  order: 1;
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: 5px;
   padding: 3px 1px;
   border-radius: 4px;
   background: rgba(255,255,255,.78);
@@ -27,6 +28,8 @@
   line-height: 1.05;
   text-align: center;
 }
+.hot-deals .deal-grid .deal-logo { order: 0; }
+.hot-deals .deal-grid .deal-tag { order: 2; flex: 0 0 auto; }
 .hot-deals .deal-grid .deal-card:first-child .deal-visual::after { content: "FEATURED DEAL"; }
 .hot-deals .deal-grid .deal-card:last-child .deal-visual::after { content: "VALID NOW"; }
 .hot-deals .deal-grid .deal-content {
@@ -92,7 +95,7 @@
   .hot-deals .deal-grid .deal-card .deal-visual { padding: 8px 4px; }
   .hot-deals .deal-grid .deal-logo { width: 34px; height: 34px; border-radius: 9px; }
   .hot-deals .deal-grid .deal-logo img { width: 27px; height: 27px; }
-  .hot-deals .deal-grid .deal-visual::after { bottom: 40px; font-size: .34rem; }
+  .hot-deals .deal-grid .deal-visual::after { margin-bottom: 3px; font-size: .34rem; }
   .hot-deals .deal-grid .deal-tag span { font-size: 1rem; }
   .hot-deals .deal-grid .deal-tag small { font-size: .4rem; }
   .hot-deals .deal-grid .deal-content { min-width: 0; padding: 8px 7px 2px; }
