@@ -1,4 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const reviewGrid = document.querySelector('.reviews-grid');
+  const products = window.REVIEW_HUBS_PRODUCTS || [];
+
+  if (reviewGrid && products.length) {
+    reviewGrid.innerHTML = products.map((product) => {
+      const stars = Array.from({ length: 5 }, (_, index) =>
+        `<span class="${index < product.rating ? '' : 'star-off'}">&#9733;</span>`
+      ).join('');
+      const logo = `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(product.domain)}`;
+
+      return `
+        <article class="review-card">
+          <div class="review-top">
+            <div class="review-avatar local-avatar" aria-hidden="true">${product.avatar}</div>
+            <div class="review-user">
+              <h3>${product.reviewer}</h3>
+              <div class="stars" aria-label="${product.rating} out of 5 stars">${stars}</div>
+            </div>
+          </div>
+          <p>${product.review}</p>
+          <div class="review-brand">
+            <div class="review-brand-mark">
+              <img src="${logo}" alt="${product.name} logo" data-fallback="${product.name.charAt(0)}" />
+            </div>
+            <div>
+              <div class="review-brand-name">${product.name}</div>
+              <div class="review-domain">${product.domain}</div>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    reviewGrid.querySelectorAll('.review-brand-mark img').forEach((image) => {
+      image.addEventListener('error', () => {
+        const mark = image.parentElement;
+        mark.textContent = image.dataset.fallback;
+        mark.classList.add('logo-fallback');
+      }, { once: true });
+    });
+  }
+
   const buttons = document.querySelectorAll('button');
 
   buttons.forEach((button) => {
