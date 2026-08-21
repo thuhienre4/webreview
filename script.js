@@ -56,6 +56,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  document.querySelectorAll('[data-copy-code]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const code = button.dataset.copyCode;
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(code);
+        else {
+          const field = document.createElement('textarea');
+          field.value = code;
+          field.style.position = 'fixed';
+          field.style.opacity = '0';
+          document.body.appendChild(field);
+          field.select();
+          document.execCommand('copy');
+          field.remove();
+        }
+        const original = button.textContent;
+        button.textContent = '✓';
+        setTimeout(() => { button.textContent = original; }, 1200);
+      } catch {
+        button.title = `Code: ${code}`;
+      }
+    });
+  });
+
   // Keep homepage coupon links in sync with the admin-managed API.
   fetch('/api/offers', { cache: 'no-store' })
     .then((response) => response.ok ? response.json() : [])
