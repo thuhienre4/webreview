@@ -846,6 +846,18 @@ input {
   gap: 22px;
 }
 
+.brand-card-logo-fallback {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(20, 193, 188, 0.16), rgba(116, 68, 244, 0.14));
+  color: #17233d;
+  font-size: 28px;
+  font-weight: 800;
+}
+
 .deal-card {
   display: grid;
   grid-template-columns: 118px minmax(0, 1fr);
