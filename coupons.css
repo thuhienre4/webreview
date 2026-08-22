@@ -443,6 +443,42 @@
   display: none;
 }
 
+/* Reuse the submerged discount-tag artwork from the home hero. */
+.top-coupons {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.top-coupons::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: clamp(-190px, -12vw, -110px);
+  right: clamp(-150px, -7vw, -72px);
+  width: clamp(430px, 46vw, 680px);
+  aspect-ratio: 1 / 1.12;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 52% 48%, rgba(115,116,245,.13), transparent 66%),
+    url("assets/illustrations/hot-deals-discount-tag.png") center / contain no-repeat;
+  opacity: .3;
+  filter: saturate(.9) drop-shadow(0 20px 38px rgba(94,101,205,.12));
+}
+
+.top-coupons > .container {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 620px) {
+  .top-coupons::before {
+    top: -105px;
+    right: -185px;
+    width: 430px;
+    opacity: .2;
+  }
+}
+
 .top-coupons .feature-coupon,
 .top-coupons .feature-coupon:hover {
   border-color: transparent !important;

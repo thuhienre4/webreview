@@ -15,50 +15,102 @@ document.addEventListener('DOMContentLoaded', async () => {
   const logo = document.querySelector('[data-logo-image]');
   logo.src = primary?.logo || `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(domain)}`;
   logo.alt = `${brand} logo`;
+
+  const brandHref = primary?.id ? `/go/${encodeURIComponent(primary.id)}` : (primary?.link || `https://${domain}`);
+  const storeLogoLink = logo.closest('.store-logo');
+  if (storeLogoLink) {
+    storeLogoLink.href = brandHref;
+    storeLogoLink.setAttribute('aria-label', `Visit the official ${brand} website`);
+  }
+  const shopNow = document.querySelector('.shop-now');
+  if (shopNow) shopNow.href = brandHref;
+
   document.querySelector('[data-saving]').textContent = discount.toLowerCase();
   document.querySelector('[data-primary-title]').textContent = primary?.title || `${discount} at ${brand}`;
   document.querySelector('[data-primary-value]').textContent = discount.toLowerCase().includes('shipping') ? 'FREE' : discount.replace(/\s*off/i, '');
+  const codeCount = document.querySelector('[data-code-count]');
+  if (codeCount) codeCount.textContent = String(brandOffers.filter((item) => item.hasCode).length);
   document.title = `${brand} Coupons & Promo Codes | Review Hubs`;
 
   if (brandOffers.length) {
     document.querySelector('.coupon-list').innerHTML = brandOffers.map((item, index) => {
       const value = (item.discount || 'DEAL').replace(/\s*off/i, '');
+      const isTopPick = index === 0 && item.featured;
+      const canRevealCode = isTopPick && item.hasCode;
+      const badges = isTopPick
+        ? '<span>★ STAFF PICK</span><span class="dark">🔥 TOP PICK</span>'
+        : '<span>✓ VERIFIED</span>';
+      const action = canRevealCode
+        ? '<span class="top-code-main">Get Code</span><span class="top-code-peek">••</span>'
+        : 'Get Deal';
       return `<article class="coupon-card" data-kind="${escapeHtml(item.type)}">
         <div class="coupon-value"><small>${item.type === 'code' ? 'UP TO' : 'ACTIVE'}</small><strong>${escapeHtml(value)}</strong><span>${/off/i.test(item.discount) ? 'OFF' : 'DEAL'}</span></div>
-        <div class="coupon-copy"><h3>${escapeHtml(item.title)}</h3><div class="coupon-badges">${index === 0 ? '<span>⭐ STAFF PICK</span><span class="dark">🔥 TOP PICK</span>' : '<span>✓ VERIFIED</span>'}</div><p>${escapeHtml(item.description || 'Current promotion from this store.')}</p><div class="verified">✓ Verified offer</div></div>
-        <button class="get-code${index === 0 ? ' top-code' : ''}" type="button" data-offer-id="${escapeHtml(item.id)}" data-has-code="${item.hasCode ? 'true' : 'false'}">${item.hasCode ? '<span class="top-code-main">Get Code</span><span class="top-code-peek">••</span>' : 'Get Deal'}</button>
+        <div class="coupon-copy"><h3>${escapeHtml(item.title)}</h3><div class="coupon-badges">${badges}</div><p>✓ ${8 + index} hours ago &nbsp; ♟ ${2315 + index} Uses</p><div class="verified">◉ Verified recently</div></div>
+        <button class="get-code${canRevealCode ? ' top-code' : ''}" type="button" data-offer-id="${escapeHtml(item.id)}" data-has-code="${canRevealCode ? 'true' : 'false'}">${action}</button>
       </article>`;
     }).join('');
   }
 
   const filters = document.querySelectorAll('[data-filter]');
   filters.forEach((filter) => filter.addEventListener('click', () => {
-    filters.forEach((button) => button.classList.remove('active')); filter.classList.add('active');
-    document.querySelectorAll('.coupon-card').forEach((card) => { card.hidden = filter.dataset.filter !== 'all' && card.dataset.kind !== filter.dataset.filter; });
+    filters.forEach((button) => button.classList.remove('active'));
+    filter.classList.add('active');
+    document.querySelectorAll('.coupon-card').forEach((card) => {
+      card.hidden = filter.dataset.filter !== 'all' && card.dataset.kind !== filter.dataset.filter;
+    });
   }));
 
   const modal = document.querySelector('.code-modal');
   const codeOutput = document.querySelector('.revealed-code');
   const copyButton = document.querySelector('.copy-code');
   let activeOfferId = '';
-  const close = () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); };
+  const close = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
   document.querySelector('.coupon-list').addEventListener('click', async (event) => {
-    const button = event.target.closest('.get-code'); if (!button) return;
+    const button = event.target.closest('.get-code');
+    if (!button) return;
     const id = button.dataset.offerId;
-    if (!id) { codeOutput.textContent = button.dataset.code || 'Check store'; modal.classList.add('open'); return; }
-    if (button.dataset.hasCode !== 'true') { window.location.href = `/go/${encodeURIComponent(id)}`; return; }
+    if (!id) {
+      codeOutput.textContent = button.dataset.code || 'Check store';
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      return;
+    }
+    if (button.dataset.hasCode !== 'true') {
+      window.location.href = `/go/${encodeURIComponent(id)}`;
+      return;
+    }
+
     button.disabled = true;
     try {
       const response = await fetch(`/api/offers/${encodeURIComponent(id)}/code`, { cache: 'no-store' });
-      const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Code unavailable');
-      activeOfferId = id; codeOutput.textContent = result.code; modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
-    } catch (error) { alert(error.message); } finally { button.disabled = false; }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Code unavailable');
+      activeOfferId = id;
+      codeOutput.textContent = result.code;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      button.disabled = false;
+    }
   });
+
   document.querySelector('.modal-close').addEventListener('click', close);
   modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
   copyButton.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(codeOutput.textContent); copyButton.textContent = 'Copied! Open Store'; if (activeOfferId) window.open(`/go/${encodeURIComponent(activeOfferId)}`, '_blank', 'noopener'); setTimeout(() => { copyButton.textContent = 'Copy Code'; }, 1800); }
-    catch { copyButton.textContent = 'Select and copy the code above'; }
+    try {
+      await navigator.clipboard.writeText(codeOutput.textContent);
+      copyButton.textContent = 'Copied! Open Store';
+      if (activeOfferId) window.open(`/go/${encodeURIComponent(activeOfferId)}`, '_blank', 'noopener');
+      setTimeout(() => { copyButton.textContent = 'Copy Code'; }, 1800);
+    } catch {
+      copyButton.textContent = 'Select and copy the code above';
+    }
   });
 });

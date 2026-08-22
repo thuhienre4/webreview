@@ -553,6 +553,25 @@ body button[class]:not(.top-code) {
   border-width: 3px !important;
 }
 
+/* Match coupon-pill outlines to the category-card outline treatment. */
+.top-coupons .coupon-brand-strip strong,
+.blog-page .finder-categories button {
+  border-width: 1.5px !important;
+  background:
+    linear-gradient(100deg, rgba(250,253,255,.94), rgba(249,247,255,.94)) padding-box,
+    linear-gradient(100deg, #67cec9 0%, #78b1dc 50%, #9a84e6 100%) border-box !important;
+  box-shadow: none !important;
+}
+
+.top-coupons .coupon-brand-strip a:hover strong,
+.top-coupons .coupon-brand-strip a:focus-visible strong {
+  background: linear-gradient(105deg, #45c6c0 0%, #579fd3 52%, #8069dc 100%) !important;
+}
+
+.top-coupons .coupon-brand-strip a:active strong {
+  background: linear-gradient(105deg, #35ada7 0%, #498bbb 52%, #6c55c6 100%) !important;
+}
+
 /* Product filters mirror the floating active-tab treatment in the header. */
 .products-page .product-filters {
   width: fit-content;
@@ -1248,37 +1267,42 @@ body button[class]:not(.top-code) {
 
 /* Compact solid coupon CTA from the supplied button reference. */
 .coupons-page .trending-row .trend-button {
-  width: 112px !important;
-  min-height: 42px !important;
+  width: 156px !important;
+  min-height: 44px !important;
   justify-self: end;
-  padding: 0 14px !important;
-  border: 3px solid #45c6c0 !important;
-  border-radius: 999px !important;
-  background: #45c6c0 !important;
+  padding: 0 24px !important;
+  border: 2px solid #2dc1ad !important;
+  border-radius: 8px !important;
+  background: #2dc1ad !important;
   color: #fff !important;
-  box-shadow: 0 9px 20px rgba(48, 177, 171, .2) !important;
-  font-size: .72rem;
-  font-weight: 800;
+  box-shadow: 0 9px 20px rgba(45, 193, 173, .2) !important;
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: -.015em;
+  text-shadow: 0 1px 1px rgba(32, 47, 92, .12);
   white-space: nowrap;
 }
 
 .coupons-page .trending-row .trend-button:hover {
-  border-color: #31b4ae !important;
-  background: #31b4ae !important;
-  box-shadow: 0 12px 24px rgba(38, 157, 151, .27) !important;
+  border-color: #22ae9c !important;
+  background: #22ae9c !important;
+  box-shadow: 0 12px 24px rgba(34, 174, 156, .27) !important;
   transform: translateY(-2px);
 }
 
 .coupons-page .trending-row .trend-button:active {
-  border-color: #269d98 !important;
-  background: #269d98 !important;
+  border-color: #1b9586 !important;
+  background: #1b9586 !important;
   transform: scale(.96) !important;
 }
 
 @media (max-width: 620px) {
   .coupons-page .trending-row .trend-button {
     grid-column: 1 / -1;
-    justify-self: center;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 46px !important;
+    justify-self: stretch;
     margin-bottom: 4px;
   }
 }
