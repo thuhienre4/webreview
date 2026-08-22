@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     carousel.innerHTML = carouselOffers.map((offer) => `
       <a class="feature-coupon" href="${dealUrl(offer)}">
         <img src="${escapeHtml(logoUrl(offer))}" alt="${escapeHtml(offer.brand)} logo" />
-        <small>${escapeHtml(offer.brand)}</small><h2>${escapeHtml(offer.title)}<br />${escapeHtml(offer.discount)}</h2>
+        <small>${escapeHtml(offer.brand)}</small><h2>${escapeHtml(offer.title)}</h2>
       </a>`).join('');
 
     const brandStrip = document.querySelector('.coupon-brand-strip');
@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const animate = (time) => { if (!lastFrame) lastFrame = time; const delta = Math.min(time - lastFrame, 40); lastFrame = time; if (!paused && !document.hidden && originalCount) { carousel.scrollLeft += delta * .075; const loopWidth = cardStep() * originalCount; if (loopWidth && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth; } paintDots(); window.requestAnimationFrame(animate); };
   previous?.addEventListener('click', () => { carousel.scrollBy({ left: -cardStep(), behavior: 'smooth' }); pauseBriefly(); });
   next?.addEventListener('click', () => { carousel.scrollBy({ left: cardStep(), behavior: 'smooth' }); pauseBriefly(); });
-  carousel.addEventListener('pointerdown', () => { paused = true; }); carousel.addEventListener('pointerup', pauseBriefly); carousel.addEventListener('pointercancel', pauseBriefly);
-  paintDots(); window.requestAnimationFrame(animate);
+  carousel.addEventListener('pointerdown', () => { paused = true; });
+  carousel.addEventListener('pointerup', pauseBriefly);
+  carousel.addEventListener('pointercancel', pauseBriefly);
+  paintDots();
+  window.requestAnimationFrame(animate);
 });

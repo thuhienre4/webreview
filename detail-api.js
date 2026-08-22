@@ -34,18 +34,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (brandOffers.length) {
     document.querySelector('.coupon-list').innerHTML = brandOffers.map((item, index) => {
       const value = (item.discount || 'DEAL').replace(/\s*off/i, '');
-      const isTopPick = index === 0 && item.featured;
+      const isTopPick = Boolean(item.featured);
       const canRevealCode = isTopPick && item.hasCode;
       const badges = isTopPick
         ? '<span>★ STAFF PICK</span><span class="dark">🔥 TOP PICK</span>'
         : '<span>✓ VERIFIED</span>';
-      const action = canRevealCode
-        ? '<span class="top-code-main">Get Code</span><span class="top-code-peek">••</span>'
-        : 'Get Deal';
+      const actionLabel = canRevealCode ? 'Get Code' : 'Get Deal';
+      const action = isTopPick
+        ? `<span class="top-code-main">${actionLabel}</span><span class="top-code-peek">••</span>`
+        : actionLabel;
       return `<article class="coupon-card" data-kind="${escapeHtml(item.type)}">
         <div class="coupon-value"><small>${item.type === 'code' ? 'UP TO' : 'ACTIVE'}</small><strong>${escapeHtml(value)}</strong><span>${/off/i.test(item.discount) ? 'OFF' : 'DEAL'}</span></div>
         <div class="coupon-copy"><h3>${escapeHtml(item.title)}</h3><div class="coupon-badges">${badges}</div><p>✓ ${8 + index} hours ago &nbsp; ♟ ${2315 + index} Uses</p><div class="verified">◉ Verified recently</div></div>
-        <button class="get-code${canRevealCode ? ' top-code' : ''}" type="button" data-offer-id="${escapeHtml(item.id)}" data-has-code="${canRevealCode ? 'true' : 'false'}">${action}</button>
+        <button class="get-code${isTopPick ? ' top-code' : ''}" type="button" data-offer-id="${escapeHtml(item.id)}" data-has-code="${canRevealCode ? 'true' : 'false'}">${action}</button>
       </article>`;
     }).join('');
   }
