@@ -22,8 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     storeLogoLink.href = brandHref;
     storeLogoLink.setAttribute('aria-label', `Visit the official ${brand} website`);
   }
-  const shopNow = document.querySelector('.shop-now');
-  if (shopNow) shopNow.href = brandHref;
+  document.querySelectorAll('.shop-now').forEach((shopNow) => { shopNow.href = brandHref; });
 
   document.querySelector('[data-saving]').textContent = discount.toLowerCase();
   document.querySelector('[data-primary-title]').textContent = primary?.title || `${discount} at ${brand}`;

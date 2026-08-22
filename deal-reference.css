@@ -219,6 +219,8 @@
 
 .coupon-page .shop-now:hover { background: #22ae9c !important; }
 
+.coupon-page .mobile-shop-now { display: none !important; }
+
 .coupon-page .quick-menu h3 {
   margin: 20px 0 10px;
   color: #080f20;
@@ -434,6 +436,23 @@
   .coupon-page .site-header .main-nav a { font-size: .68rem; }
   .coupon-page .coupon-layout { grid-template-columns: 1fr !important; }
   .coupon-page .store-panel { position: static; }
+  .coupon-page .store-panel .store-stats {
+    width: 100%;
+    margin-top: 18px;
+  }
+  .coupon-page .store-panel > .shop-now,
+  .coupon-page .store-panel .quick-menu { display: none !important; }
+  .coupon-page .coupon-layout > .mobile-shop-now {
+    grid-column: 1 / -1;
+    width: calc(100% - 24px) !important;
+    min-height: 56px;
+    display: grid !important;
+    place-items: center;
+    justify-self: center;
+    margin: 4px auto 0 !important;
+    border-radius: 999px !important;
+    font-size: 1rem;
+  }
   .coupon-page .coupon-information { margin-left: 0; }
 }
 

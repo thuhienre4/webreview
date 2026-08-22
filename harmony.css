@@ -1772,3 +1772,66 @@ body.coupon-page {
     border-radius: 16px;
   }
 }
+
+/* Compact, scannable trending coupons on phones. */
+@media (max-width: 620px) {
+  .coupons-page .trending-row {
+    min-height: 116px;
+    display: grid !important;
+    grid-template-columns: 56px 66px minmax(0, 1fr) !important;
+    grid-template-areas:
+      "logo discount copy"
+      "logo discount action";
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 7px;
+    padding: 12px !important;
+    overflow: hidden;
+  }
+
+  .coupons-page .trending-row > img {
+    grid-area: logo;
+    width: 56px !important;
+    height: 56px !important;
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  .coupons-page .trending-row .discount {
+    grid-area: discount;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(81,88,137,.12);
+  }
+
+  .coupons-page .trending-row .discount strong { font-size: 1.55rem; }
+  .coupons-page .trending-row .discount span { margin-top: 3px; font-size: .67rem; }
+
+  .coupons-page .trending-row .trend-copy {
+    grid-area: copy;
+    grid-column: auto !important;
+    align-self: end;
+    min-width: 0;
+  }
+
+  .coupons-page .trending-row .trend-copy h3 {
+    margin: 0 0 4px;
+    font-size: .82rem;
+    line-height: 1.3;
+  }
+
+  .coupons-page .trending-row .trend-copy a { font-size: .66rem; }
+
+  .coupons-page .trending-row .trend-button {
+    grid-area: action;
+    grid-column: auto !important;
+    width: min(140px, 100%) !important;
+    max-width: 140px !important;
+    min-height: 38px !important;
+    justify-self: end;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    font-size: .72rem;
+  }
+}
