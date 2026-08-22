@@ -99,7 +99,9 @@ function safeEqual(left, right) {
 function text(value, max = 500) { return String(value ?? '').trim().slice(0, max); }
 function identifier(prefix) { return `${prefix}_${Date.now().toString(36)}_${crypto.randomBytes(5).toString('hex')}`; }
 function safeUrl(value) {
-  const parsed = new URL(String(value || ''));
+  let raw = String(value || '').trim();
+  if (/^[\w.-]+\.[a-z]{2,}(?:[/?#]|$)/i.test(raw)) raw = `https://${raw}`;
+  const parsed = new URL(raw);
   if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Only HTTP/HTTPS links are allowed.');
   return parsed.toString();
 }
@@ -112,7 +114,28 @@ function safeImageUrl(value) {
 function slug(value) { return text(value, 160).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 
 function hostname(value) {
-  try { return new URL(String(value || '')).hostname.replace(/^www\./, ''); } catch { return ''; }
+  try { return new URL(safeUrl(value)).hostname.replace(/^www\./, ''); } catch { return ''; }
+}
+
+function normalizedFieldKey(value) {
+  return String(value).trim().replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase().replace(/[\s-]+/g, '_');
+}
+
+function destinationHostname(value) {
+  try {
+    const current = new URL(safeUrl(value));
+    for (const key of ['url', 'u', 'target', 'redirect', 'redirect_url', 'destination', 'destination_url', 'merchant_url', 'landing_page']) {
+      const candidate = current.searchParams.get(key);
+      if (!candidate) continue;
+      try { const target = new URL(safeUrl(decodeURIComponent(candidate))); return target.hostname.replace(/^www\./, ''); } catch { /* use affiliate hostname */ }
+    }
+    return current.hostname.replace(/^www\./, '');
+  } catch { return ''; }
+}
+
+function logoForDomain(domain) {
+  const clean = hostname(domain) || text(domain, 180).replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^www\./, '');
+  return clean ? `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(clean)}` : '';
 }
 
 function cleanOffer(payload, previous = {}) {
@@ -150,21 +173,21 @@ function booleanValue(value, fallback = false) {
 }
 
 function normalizeBatchOffer(source = {}) {
-  const item = Object.fromEntries(Object.entries(source).map(([key, value]) => [String(key).trim().toLowerCase().replace(/[\s-]+/g, '_'), value]));
+  const item = Object.fromEntries(Object.entries(source).map(([key, value]) => [normalizedFieldKey(key), value]));
   const rawType = String(firstValue(item, ['type', 'offer_type', 'kind'])).toLowerCase();
   const code = firstValue(item, ['code', 'coupon_code', 'promo_code', 'voucher_code']);
   return {
-    brand: firstValue(item, ['brand', 'store', 'store_name', 'merchant', 'merchant_name', 'label', 'shop']),
-    domain: firstValue(item, ['domain', 'store_domain', 'merchant_domain', 'website']),
+    brand: firstValue(item, ['brand', 'brand_name', 'store', 'store_name', 'merchant', 'merchant_name', 'label', 'shop']),
+    domain: firstValue(item, ['domain', 'store_domain', 'merchant_domain', 'brand_domain', 'website', 'website_url', 'store_url']),
     title: firstValue(item, ['title', 'name', 'offer_title', 'coupon_title', 'deal_title']),
     type: ['deal', 'promotion', 'sale'].includes(rawType) ? 'deal' : ['code', 'coupon', 'voucher'].includes(rawType) ? 'code' : code ? 'code' : 'deal',
     code,
     discount: firstValue(item, ['discount', 'offer', 'discount_value', 'saving']),
-    link: firstValue(item, ['link', 'url', 'affiliate_link', 'affiliate_url', 'destination_url']),
+    link: firstValue(item, ['link', 'url', 'affiliate_link', 'affiliate_url', 'affiliate', 'tracking_link', 'tracking_url', 'destination_url']),
     category: firstValue(item, ['category', 'industry'], 'Other'),
     description: firstValue(item, ['description', 'review', 'details', 'terms']),
     expiry: firstValue(item, ['expiry', 'expires', 'expiration', 'expiration_date', 'end_date']),
-    logo: firstValue(item, ['logo', 'logo_url', 'image']),
+    logo: firstValue(item, ['logo', 'logo_url', 'brand_logo', 'brand_logo_url', 'merchant_logo', 'store_logo', 'image', 'image_url']),
     order: Number(firstValue(item, ['order', 'sort_order', 'priority'], 0)) || 0,
     visible: booleanValue(firstValue(item, ['visible', 'active', 'published', 'status'], true), true),
     featured: booleanValue(firstValue(item, ['featured', 'is_featured'], false), false),
@@ -210,12 +233,13 @@ function prepareBatchOffers(items, currentOffers = [], currentStores = []) {
       let suffix = 2;
       while (usedStoreIds.has(storeId)) { storeId = `store_${labelKey}_${suffix}`; suffix += 1; }
       usedStoreIds.add(storeId);
-      const domain = offer.domain || hostname(offer.link);
-      store = cleanStore({ id: storeId, name: offer.brand, domain, slug: labelKey, category: offer.category, logo: offer.logo || `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(domain)}`, description: `Coupons and deals from ${offer.brand}.`, visible: true });
+      const domain = offer.domain || destinationHostname(offer.link);
+      store = cleanStore({ id: storeId, name: offer.brand, domain, slug: labelKey, category: offer.category, logo: offer.logo || logoForDomain(domain), description: `Coupons and deals from ${offer.brand}.`, visible: true });
       plannedStores.set(labelKey, store);
     }
     offer.storeId = store.id;
     if (!offer.domain) offer.domain = store.domain;
+    if (!offer.logo) offer.logo = store.logo || logoForDomain(store.domain);
     const group = storeGroups.get(store.id) || { storeId: store.id, name: store.name, domain: store.domain, status: plannedStores.has(labelKey) ? 'new' : 'existing', offers: 0, codes: 0, deals: 0, affiliateLinks: new Set() };
     group.offers += 1;
     group[offer.type === 'code' ? 'codes' : 'deals'] += 1;

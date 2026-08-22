@@ -1647,8 +1647,8 @@ body.products-page .product-tags span { padding: 5px 10px; font-size: .66rem; }
 body.products-page .product-price { margin-top: 14px; font-size: .76rem; }
 body.products-page .product-price span { padding: 5px 8px; font-size: .62rem; }
 body.products-page .product-actions { position: static; display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px; margin-top: auto; padding-top: 16px; }
-body.products-page .product-actions .explore { position: static; min-height: 42px; opacity: 1; border-radius: 10px; font-size: .78rem; }
-body.products-page .product-actions .visit { min-height: 42px; display: grid; border-radius: 10px; font-size: .78rem; }
+body.products-page .product-actions .explore { position: static; min-height: 42px; opacity: 1; border-radius: 10px; font-size: .88rem; font-weight: 800; }
+body.products-page .product-actions .visit { min-height: 42px; display: grid; border-radius: 10px; font-size: .88rem; font-weight: 800; }
 
 @media (max-width: 1050px) {
   body.products-page .product-filters.product-category-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
