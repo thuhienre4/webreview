@@ -111,6 +111,10 @@ function safeImageUrl(value) {
 }
 function slug(value) { return text(value, 160).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 
+function hostname(value) {
+  try { return new URL(String(value || '')).hostname.replace(/^www\./, ''); } catch { return ''; }
+}
+
 function cleanOffer(payload, previous = {}) {
   const brand = text(payload.brand ?? previous.brand, 160);
   const title = text(payload.title ?? previous.title, 240);
@@ -147,13 +151,14 @@ function booleanValue(value, fallback = false) {
 
 function normalizeBatchOffer(source = {}) {
   const item = Object.fromEntries(Object.entries(source).map(([key, value]) => [String(key).trim().toLowerCase().replace(/[\s-]+/g, '_'), value]));
-  const rawType = String(firstValue(item, ['type', 'offer_type', 'kind'], 'code')).toLowerCase();
+  const rawType = String(firstValue(item, ['type', 'offer_type', 'kind'])).toLowerCase();
+  const code = firstValue(item, ['code', 'coupon_code', 'promo_code', 'voucher_code']);
   return {
-    brand: firstValue(item, ['brand', 'store', 'store_name', 'merchant', 'merchant_name']),
+    brand: firstValue(item, ['brand', 'store', 'store_name', 'merchant', 'merchant_name', 'label', 'shop']),
     domain: firstValue(item, ['domain', 'store_domain', 'merchant_domain', 'website']),
     title: firstValue(item, ['title', 'name', 'offer_title', 'coupon_title', 'deal_title']),
-    type: ['deal', 'promotion', 'sale'].includes(rawType) ? 'deal' : 'code',
-    code: firstValue(item, ['code', 'coupon_code', 'promo_code', 'voucher_code']),
+    type: ['deal', 'promotion', 'sale'].includes(rawType) ? 'deal' : ['code', 'coupon', 'voucher'].includes(rawType) ? 'code' : code ? 'code' : 'deal',
+    code,
     discount: firstValue(item, ['discount', 'offer', 'discount_value', 'saving']),
     link: firstValue(item, ['link', 'url', 'affiliate_link', 'affiliate_url', 'destination_url']),
     category: firstValue(item, ['category', 'industry'], 'Other'),
@@ -170,7 +175,7 @@ function offerFingerprint(offer) {
   return [offer.brand, offer.code || offer.title, offer.link].map((value) => String(value || '').trim().toLowerCase()).join('|');
 }
 
-function prepareBatchOffers(items, currentOffers = []) {
+function prepareBatchOffers(items, currentOffers = [], currentStores = []) {
   const existing = new Set(currentOffers.map(offerFingerprint));
   const accepted = new Set();
   const ready = [];
@@ -191,7 +196,34 @@ function prepareBatchOffers(items, currentOffers = []) {
       errors.push({ row: index + 2, title: text(source?.title || source?.name, 160), error: error.message });
     }
   });
-  return { items: ready, errors, duplicates, total: items.length };
+  const storesByLabel = new Map();
+  currentStores.forEach((store) => storesByLabel.set(slug(store.name), store));
+  const plannedStores = new Map();
+  const usedStoreIds = new Set(currentStores.map((store) => store.id));
+  const storeGroups = new Map();
+
+  ready.forEach((offer) => {
+    const labelKey = slug(offer.brand) || 'store';
+    let store = storesByLabel.get(labelKey) || plannedStores.get(labelKey);
+    if (!store) {
+      let storeId = `store_${labelKey}`;
+      let suffix = 2;
+      while (usedStoreIds.has(storeId)) { storeId = `store_${labelKey}_${suffix}`; suffix += 1; }
+      usedStoreIds.add(storeId);
+      const domain = offer.domain || hostname(offer.link);
+      store = cleanStore({ id: storeId, name: offer.brand, domain, slug: labelKey, category: offer.category, logo: offer.logo || `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(domain)}`, description: `Coupons and deals from ${offer.brand}.`, visible: true });
+      plannedStores.set(labelKey, store);
+    }
+    offer.storeId = store.id;
+    if (!offer.domain) offer.domain = store.domain;
+    const group = storeGroups.get(store.id) || { storeId: store.id, name: store.name, domain: store.domain, status: plannedStores.has(labelKey) ? 'new' : 'existing', offers: 0, codes: 0, deals: 0, affiliateLinks: new Set() };
+    group.offers += 1;
+    group[offer.type === 'code' ? 'codes' : 'deals'] += 1;
+    group.affiliateLinks.add(offer.link);
+    storeGroups.set(store.id, group);
+  });
+
+  return { items: ready, storesToCreate: [...plannedStores.values()], storeGroups: [...storeGroups.values()].map((group) => ({ ...group, affiliateLinks: group.affiliateLinks.size })), errors, duplicates, total: items.length };
 }
 
 function cleanPost(payload, previous = {}) {
@@ -445,14 +477,15 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && url.pathname === '/api/admin/offers/batch/preview') {
       if (!requireAdmin(req, res)) return; const payload = await body(req, 5_000_000); const items = Array.isArray(payload) ? payload : payload.items;
       if (!Array.isArray(items) || !items.length || items.length > 500) return json(res, 400, { error: 'Supply between 1 and 500 offers.' });
-      return json(res, 200, prepareBatchOffers(items, readArray(offersFile)));
+      return json(res, 200, prepareBatchOffers(items, readArray(offersFile), readArray(storesFile)));
     }
     if (req.method === 'POST' && url.pathname === '/api/admin/offers/batch') {
       if (!requireAdmin(req, res)) return; const payload = await body(req, 5_000_000); const items = Array.isArray(payload) ? payload : payload.items;
       if (!Array.isArray(items) || !items.length || items.length > 500) return json(res, 400, { error: 'Supply between 1 and 500 offers.' });
-      const offers = readArray(offersFile); const prepared = prepareBatchOffers(items, offers);
+      const offers = readArray(offersFile); const stores = readArray(storesFile); const prepared = prepareBatchOffers(items, offers, stores);
+      if (prepared.storesToCreate.length) writeArray(storesFile, [...stores, ...prepared.storesToCreate]);
       if (prepared.items.length) writeArray(offersFile, [...prepared.items, ...offers]);
-      return json(res, 201, { created: prepared.items, errors: prepared.errors, duplicates: prepared.duplicates, total: prepared.total, imported: prepared.items.length });
+      return json(res, 201, { created: prepared.items, storesCreated: prepared.storesToCreate, storeGroups: prepared.storeGroups, errors: prepared.errors, duplicates: prepared.duplicates, total: prepared.total, imported: prepared.items.length });
     }
     const adminOfferMatch = url.pathname.match(/^\/api\/admin\/offers\/([^/]+)$/);
     if (adminOfferMatch && ['PUT', 'DELETE'].includes(req.method)) {
