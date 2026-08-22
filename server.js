@@ -176,13 +176,16 @@ function normalizeBatchOffer(source = {}) {
   const item = Object.fromEntries(Object.entries(source).map(([key, value]) => [normalizedFieldKey(key), value]));
   const rawType = String(firstValue(item, ['type', 'offer_type', 'kind'])).toLowerCase();
   const code = firstValue(item, ['code', 'coupon_code', 'promo_code', 'voucher_code']);
+  const namedBrand = firstValue(item, ['brand', 'brand_name', 'store', 'store_name', 'merchant', 'merchant_name', 'label', 'shop']);
+  const explicitDiscount = firstValue(item, ['discount', 'discount_value', 'saving']);
+  const offerColumnIsBrand = !namedBrand && Boolean(item.offer && item.title && explicitDiscount);
   return {
-    brand: firstValue(item, ['brand', 'brand_name', 'store', 'store_name', 'merchant', 'merchant_name', 'label', 'shop']),
+    brand: namedBrand || (offerColumnIsBrand ? item.offer : ''),
     domain: firstValue(item, ['domain', 'store_domain', 'merchant_domain', 'brand_domain', 'website', 'website_url', 'store_url']),
     title: firstValue(item, ['title', 'name', 'offer_title', 'coupon_title', 'deal_title']),
     type: ['deal', 'promotion', 'sale'].includes(rawType) ? 'deal' : ['code', 'coupon', 'voucher'].includes(rawType) ? 'code' : code ? 'code' : 'deal',
     code,
-    discount: firstValue(item, ['discount', 'offer', 'discount_value', 'saving']),
+    discount: explicitDiscount || (offerColumnIsBrand ? '' : item.offer),
     link: firstValue(item, ['link', 'url', 'affiliate_link', 'affiliate_url', 'affiliate', 'tracking_link', 'tracking_url', 'destination_url']),
     category: firstValue(item, ['category', 'industry'], 'Other'),
     description: firstValue(item, ['description', 'review', 'details', 'terms']),
