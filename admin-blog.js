@@ -34,7 +34,8 @@ function showPreview() {
 }
 
 function resetForm() {
-  $('#post-form').reset();
+  const form = $('#post-form');
+  HTMLFormElement.prototype.reset.call(form);
   $('#post-id').value = '';
   $('#category').value = 'Reviews';
   $('#form-title').textContent = 'New blog post';
@@ -92,7 +93,7 @@ $('#extract').addEventListener('click', async () => {
 });
 
 $('#image').addEventListener('input', showPreview);
-$('#reset').addEventListener('click', resetForm);
+$('#new-post').addEventListener('click', resetForm);
 $('#post-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const id = $('#post-id').value;
