@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let view = 'all';
 
   const initialSearch = new URLSearchParams(window.location.search).get('search');
-  if (initialSearch && headerInput) headerInput.value = initialSearch;
+  if (initialSearch) {
+    if (headerInput) headerInput.value = initialSearch;
+    if (input) input.value = initialSearch;
+  }
 
   cards.forEach((card) => {
     const couponLink = card.querySelector('.product-actions .explore');
@@ -66,8 +69,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const label = moreCategories.querySelector('.more-label');
     if (label) label.textContent = expanded ? 'More' : 'Fewer categories';
   });
-  headerInput?.addEventListener('input', update);
-  input?.addEventListener('input', update);
+  let updateFrame = 0;
+  const scheduleUpdate = (event) => {
+    const value = event.currentTarget.value;
+    if (event.currentTarget === headerInput && input) input.value = value;
+    if (event.currentTarget === input && headerInput) headerInput.value = value;
+    cancelAnimationFrame(updateFrame);
+    updateFrame = requestAnimationFrame(update);
+  };
+  headerInput?.addEventListener('input', scheduleUpdate);
+  input?.addEventListener('input', scheduleUpdate);
   sort?.addEventListener('change', () => {
     const sorted = [...cards].sort((a, b) => {
       if (sort.value === 'name') return a.querySelector('h2').textContent.localeCompare(b.querySelector('h2').textContent);

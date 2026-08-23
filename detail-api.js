@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const requestedId = params.get('id');
   const requestedBrand = params.get('brand') || 'Glorious Daily';
   const domains = { 'lovo': 'lovo.ai', 'lala ai': 'lala.ai', 'travelstart': 'travelstart.com', 'booking.com': 'booking.com', 'fluentcrm': 'fluentcrm.com', 'fluent booking': 'fluentbooking.com' };
-  const offers = await fetch('/api/offers', { cache: 'no-store' }).then((response) => response.ok ? response.json() : []).catch(() => []);
+  const offers = await fetch('/api/offers', { signal: AbortSignal.timeout(8000) }).then((response) => response.ok ? response.json() : []).catch(() => []);
   const primary = offers.find((item) => item.id === requestedId) || offers.find((item) => item.brand.toLowerCase() === requestedBrand.toLowerCase());
   const brand = primary?.brand || requestedBrand;
   const discount = primary?.discount || params.get('offer') || '20% Off';

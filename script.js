@@ -56,6 +56,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const heroSearch = document.querySelector('.hero-section .search-box');
+  const heroSearchInput = heroSearch?.querySelector('input');
+  const submitHeroSearch = () => {
+    const query = heroSearchInput?.value.trim();
+    if (!query) {
+      heroSearchInput?.focus();
+      return;
+    }
+    window.location.href = `products.html?search=${encodeURIComponent(query)}`;
+  };
+  heroSearch?.querySelector('button')?.addEventListener('click', submitHeroSearch);
+  heroSearchInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') submitHeroSearch();
+  });
+
+  const cookieBanner = document.querySelector('.cookie-banner');
+  const cookieButton = cookieBanner?.querySelector('button');
+  try {
+    cookieBanner?.toggleAttribute('hidden', localStorage.getItem('review-hubs-cookie-choice') === 'accepted');
+  } catch { /* Storage can be disabled; keep the notice visible. */ }
+  cookieButton?.addEventListener('click', () => {
+    try { localStorage.setItem('review-hubs-cookie-choice', 'accepted'); } catch { /* non-blocking */ }
+    cookieBanner.hidden = true;
+  });
+
   const copyCouponCode = async (code) => {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(code);
@@ -199,8 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Keep homepage stores and coupon links in sync with the admin-managed API.
   Promise.all([
-    fetch('/api/stores', { cache: 'no-store' }).then((response) => response.ok ? response.json() : []),
-    fetch('/api/offers', { cache: 'no-store' }).then((response) => response.ok ? response.json() : []),
+    fetch('/api/stores', { signal: AbortSignal.timeout(8000) }).then((response) => response.ok ? response.json() : []),
+    fetch('/api/offers', { signal: AbortSignal.timeout(8000) }).then((response) => response.ok ? response.json() : []),
   ])
     .then(([stores, offers]) => {
       renderFeaturedStores(stores, offers);

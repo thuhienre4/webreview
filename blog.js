@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ? `${imageMarkup(post, true)}<div class="story-copy">${copy}</div>`
       : `<article class="small-story story-card" data-topics="${escapeHtml(topics)}">${imageMarkup(post)}<div>${copy}</div></article>`;
   };
-  fetch('/api/blog')
+  fetch('/api/blog', { signal: AbortSignal.timeout(8000) })
     .then((response) => response.ok ? response.json() : Promise.reject())
     .then((posts) => {
       if (!Array.isArray(posts) || !posts.length) return;

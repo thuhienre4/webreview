@@ -21,6 +21,7 @@ const adminEmails = new Set(String(process.env.ADMIN_EMAILS || 'hn084933@gmail.c
   .split(',').map((email) => email.trim().toLowerCase()).filter(Boolean));
 const sessions = new Map();
 const loginAttempts = new Map();
+const dataCache = new Map();
 
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -38,14 +39,23 @@ function ensureData() {
 }
 
 function readArray(file) {
-  try { const value = JSON.parse(fs.readFileSync(file, 'utf8')); return Array.isArray(value) ? value : []; }
-  catch { return []; }
+  if (dataCache.has(file)) return dataCache.get(file);
+  try {
+    const value = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const items = Array.isArray(value) ? value : [];
+    dataCache.set(file, items);
+    return items;
+  } catch {
+    dataCache.set(file, []);
+    return [];
+  }
 }
 
 function writeArray(file, value) {
   const temporary = `${file}.${process.pid}.tmp`;
   fs.writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`);
   fs.renameSync(temporary, file);
+  dataCache.set(file, value);
 }
 
 function send(res, status, body = '', type = 'text/plain; charset=utf-8', extra = {}) {
@@ -61,6 +71,17 @@ function send(res, status, body = '', type = 'text/plain; charset=utf-8', extra 
 
 function json(res, status, value, extra = {}) {
   send(res, status, JSON.stringify(value), 'application/json; charset=utf-8', { 'Cache-Control': 'no-store', ...extra });
+}
+
+function publicJson(req, res, value, maxAge = 30) {
+  const payload = JSON.stringify(value);
+  const etag = `W/\"${crypto.createHash('sha1').update(payload).digest('base64url')}\"`;
+  const headers = { ETag: etag, 'Cache-Control': `public, max-age=${maxAge}, stale-while-revalidate=120` };
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, { ...headers, 'X-Content-Type-Options': 'nosniff' });
+    return res.end();
+  }
+  return send(res, 200, payload, 'application/json; charset=utf-8', headers);
 }
 
 async function body(req, limit = 2_000_000) {
@@ -373,13 +394,25 @@ function serveStatic(req, res, pathname) {
   if (decoded.includes('\0') || decoded.startsWith('/seed/') || decoded.startsWith('/.data/') || /^\/(server\.js|package(?:-lock)?\.json|Procfile|\.env)/i.test(decoded)) return send(res, 404, 'Not found');
   const file = path.resolve(root, `.${decoded}`);
   if (!file.startsWith(`${root}${path.sep}`) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return send(res, 404, 'Not found');
-  const content = fs.readFileSync(file);
-  send(res, 200, req.method === 'HEAD' ? '' : content, mimeTypes[path.extname(file).toLowerCase()] || 'application/octet-stream', {
-    'Cache-Control': /\.(css|js|png|jpe?g|webp|svg)$/i.test(file) ? 'public, max-age=300' : 'no-cache',
-  });
+  const fileStat = fs.statSync(file);
+  const etag = `W/\"${fileStat.size.toString(36)}-${Math.trunc(fileStat.mtimeMs).toString(36)}\"`;
+  const isAsset = /\.(css|js|png|jpe?g|webp|svg)$/i.test(file);
+  const isVersioned = isAsset && /[?&]v=[\w.-]+/i.test(req.url || '');
+  const headers = {
+    ETag: etag,
+    'Cache-Control': isVersioned ? 'public, max-age=31536000, immutable' : isAsset ? 'public, max-age=3600' : 'no-cache',
+  };
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, { ...headers, 'X-Content-Type-Options': 'nosniff' });
+    return res.end();
+  }
+  const content = req.method === 'HEAD' ? '' : fs.readFileSync(file);
+  send(res, 200, content, mimeTypes[path.extname(file).toLowerCase()] || 'application/octet-stream', headers);
 }
 
 ensureData();
+// Warm frequently requested datasets once. Writes keep these references current.
+[offersFile, storesFile, subscribersFile, postsFile].forEach(readArray);
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -414,22 +447,22 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname === '/api/offers') {
       const offers = readArray(offersFile).filter((offer) => offer.visible !== false).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-      return json(res, 200, offers.map(publicOffer));
+      return publicJson(req, res, offers.map(publicOffer));
     }
 
     if (req.method === 'GET' && url.pathname === '/api/stores') {
-      return json(res, 200, readArray(storesFile).filter((store) => store.visible !== false));
+      return publicJson(req, res, readArray(storesFile).filter((store) => store.visible !== false));
     }
 
     if (req.method === 'GET' && url.pathname === '/api/blog') {
       const posts = readArray(postsFile).filter((post) => post.published === true).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-      return json(res, 200, posts);
+      return publicJson(req, res, posts);
     }
 
     const publicPostMatch = url.pathname.match(/^\/api\/blog\/([^/]+)$/);
     if (req.method === 'GET' && publicPostMatch) {
       const post = readArray(postsFile).find((item) => item.slug === decodeURIComponent(publicPostMatch[1]) && item.published === true);
-      return post ? json(res, 200, post) : json(res, 404, { error: 'Post not found.' });
+      return post ? publicJson(req, res, post) : json(res, 404, { error: 'Post not found.' });
     }
 
     const codeMatch = url.pathname.match(/^\/api\/offers\/([^/]+)\/code$/);

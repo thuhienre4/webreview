@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const next = document.querySelector('.carousel-arrow.next');
   const dots = document.querySelector('.coupon-dots');
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
-  const offers = await fetch('/api/offers', { cache: 'no-store' }).then((response) => response.ok ? response.json() : []).catch(() => []);
+  const offers = await fetch('/api/offers', { signal: AbortSignal.timeout(8000) }).then((response) => response.ok ? response.json() : []).catch(() => []);
   const dealUrl = (offer) => `deal.html?id=${encodeURIComponent(offer.id)}&brand=${encodeURIComponent(offer.brand)}&offer=${encodeURIComponent(offer.discount)}&domain=${encodeURIComponent(offer.domain || '')}`;
   const logoUrl = (offer) => offer.logo || `https://www.google.com/s2/favicons?sz=256&domain=${encodeURIComponent(offer.domain || '')}`;
 
@@ -42,12 +42,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pauseBriefly = () => { paused = true; clearTimeout(resumeTimer); resumeTimer = window.setTimeout(() => { paused = false; }, 1100); };
   originalCards.forEach((_, index) => { const dot = document.createElement('button'); dot.type = 'button'; dot.setAttribute('aria-label', `Show coupon ${index + 1}`); dot.addEventListener('click', () => { carousel.scrollTo({ left: cardStep() * index, behavior: 'smooth' }); pauseBriefly(); }); dots.append(dot); });
   const paintDots = () => { if (!originalCount || !cardStep()) return; const index = Math.floor((carousel.scrollLeft + cardStep() * .45) / cardStep()) % originalCount; [...dots.children].forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index)); };
-  const animate = (time) => { if (!lastFrame) lastFrame = time; const delta = Math.min(time - lastFrame, 40); lastFrame = time; if (!paused && !document.hidden && originalCount) { carousel.scrollLeft += delta * .075; const loopWidth = cardStep() * originalCount; if (loopWidth && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth; } paintDots(); window.requestAnimationFrame(animate); };
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animate = (time) => { if (!lastFrame) lastFrame = time; const delta = Math.min(time - lastFrame, 40); lastFrame = time; if (!paused && !document.hidden && originalCount > 1) { carousel.scrollLeft += delta * .075; const loopWidth = cardStep() * originalCount; if (loopWidth && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth; } paintDots(); window.requestAnimationFrame(animate); };
   previous?.addEventListener('click', () => { carousel.scrollBy({ left: -cardStep(), behavior: 'smooth' }); pauseBriefly(); });
   next?.addEventListener('click', () => { carousel.scrollBy({ left: cardStep(), behavior: 'smooth' }); pauseBriefly(); });
   carousel.addEventListener('pointerdown', () => { paused = true; });
   carousel.addEventListener('pointerup', pauseBriefly);
   carousel.addEventListener('pointercancel', pauseBriefly);
   paintDots();
-  window.requestAnimationFrame(animate);
+  if (!reduceMotion && originalCount > 1) window.requestAnimationFrame(animate);
 });
