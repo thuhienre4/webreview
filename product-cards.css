@@ -17,7 +17,8 @@ body.products-page .product-card {
   border-radius: 13px;
   background:
     radial-gradient(circle at 100% 0, rgba(119, 99, 224, .09), transparent 35%),
-    linear-gradient(145deg, rgba(255, 255, 255, .9), rgba(244, 248, 255, .8) 74%);
+    linear-gradient(145deg, rgba(255, 255, 255, .96), rgba(244, 248, 255, .9) 74%) !important;
+  color-scheme: light;
   box-shadow: 0 12px 28px rgba(54, 71, 128, .1) !important;
   backdrop-filter: blur(14px);
   transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
