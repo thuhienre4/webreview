@@ -13,21 +13,26 @@
   <link rel="stylesheet" href="harmony.css?v=40" />
   <link rel="stylesheet" href="typography.css?v=1" />
   <link rel="stylesheet" href="product-cards.css?v=6" />
+  <link rel="stylesheet" href="products-redesign.css?v=1" />
 </head>
 <body class="products-page">
   <header class="site-header"><div class="container header-inner">
-    <a class="brand-text" href="index.html">Review Hubs</a>
+    <a class="brand-text product-brand" href="index.html"><span class="product-brand-mark">&#9733;</span><span>Review<span>Hubs</span></span></a>
     <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Home</a><a class="active" href="products.html">Product</a><a href="coupons.html">Coupon</a><a href="blog.html">Blog</a></nav>
   </div></header>
 
   <main class="products-main">
     <section class="products-intro">
       <div class="container">
-        <div class="product-discovery">
-          <div class="product-discovery-title"><div class="product-title-copy"><h1>Top rated</h1><span class="title-accent" aria-hidden="true"></span><p>Explore the best products and tools, handpicked and rated by our community.</p></div><label class="product-sort"><span class="sr-only">Sort products</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.5 7.2V19l-3 1v-7.8L4 5Z"/></svg><select id="product-sort" aria-label="Sort products"><option value="rating">Top rated</option><option value="name">Name A&ndash;Z</option><option value="reviews">Most reviewed</option></select></label></div>
-          <label class="product-directory-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input id="header-product-search" type="search" placeholder="Search brand, product or category..." /></label>
-          <div class="product-view-tabs" aria-label="Product views"><button class="active" type="button" data-product-view="all"><span aria-hidden="true">&#10022;</span> All Products</button><button type="button" data-product-view="popular"><span aria-hidden="true">&#9733;</span> Popular</button></div>
+        <div class="product-hero">
+          <div class="product-hero-copy"><h1>Explore the best <span>products &amp; tools</span></h1><p>Handpicked and rated by our community to help you choose with confidence.</p></div>
+          <div class="product-discovery">
+            <div class="product-search-row"><label class="product-directory-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input id="header-product-search" type="search" placeholder="Search brand, product or category..." /></label><label class="product-sort"><span class="sr-only">Sort products</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.5 7.2V19l-3 1v-7.8L4 5Z"/></svg><select id="product-sort" aria-label="Sort products"><option value="rating">Top rated</option><option value="name">Name A&ndash;Z</option><option value="reviews">Most reviewed</option></select></label></div>
+            <div class="product-view-tabs" aria-label="Product views"><button class="active" type="button" data-product-view="all"><span aria-hidden="true">&#9638;</span> All Products</button><button type="button" data-product-view="popular"><span aria-hidden="true">&#9733;</span> Popular</button></div>
+          </div>
+        </div>
           <div class="product-filters product-category-grid" aria-label="Product categories">
+            <button class="active" type="button" data-category="all"><span class="category-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>All Tools</span></button>
             <button type="button" data-category="ai"><span class="category-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M9 12h.01M15 12h.01M9 15h6M12 3v4M3 11h2M19 11h2"/></svg></span><span>AI Tools</span></button>
             <button type="button" data-category="travel"><span class="category-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 8 2 7-8c1-1 2.5-.8 3.2.2.7 1 .5 2.4-.5 3.2l-7.9 6.7 2 5-1.8 1-4-4-3.8 2.4-1.4-1.4 2.5-3.8L2 12.8 3 11Z"/></svg></span><span>Travel</span></button>
             <button type="button" data-category="booking"><span class="category-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5h6v2M4 12h16M10 12v2h4v-2"/></svg></span><span>Booking</span></button>
@@ -37,7 +42,6 @@
             <button class="extra-category" type="button" data-category="scheduling"><span class="category-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M13 14h3M8 18h3"/></svg></span><span>Scheduling</span></button>
             <button class="more-categories" id="more-categories" type="button" aria-expanded="false"><span class="more-icon" aria-hidden="true">&#8285;</span><span class="more-label">More</span><span class="more-arrow" aria-hidden="true">&#8250;</span></button>
           </div>
-        </div>
       </div>
     </section>
 
