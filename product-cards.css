@@ -13,12 +13,12 @@ body.products-page .product-card {
   min-height: 270px;
   padding: 17px;
   overflow: hidden;
-  border: 1px solid rgba(91, 107, 143, .34) !important;
+  border: 1px solid rgba(91, 107, 164, .2) !important;
   border-radius: 13px;
   background:
-    radial-gradient(circle at 100% 0, rgba(105, 88, 211, .1), transparent 34%),
-    linear-gradient(145deg, #151b28, #121722 74%);
-  box-shadow: 0 12px 28px rgba(35, 43, 76, .16) !important;
+    radial-gradient(circle at 100% 0, rgba(119, 99, 224, .09), transparent 35%),
+    linear-gradient(145deg, rgba(255, 255, 255, .9), rgba(244, 248, 255, .8) 74%);
+  box-shadow: 0 12px 28px rgba(54, 71, 128, .1) !important;
   backdrop-filter: blur(14px);
   transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
 }
@@ -38,8 +38,8 @@ body.products-page .product-card::before {
 }
 
 body.products-page .product-card:hover {
-  border-color: rgba(117, 104, 225, .72) !important;
-  box-shadow: 0 18px 38px rgba(51, 51, 105, .24) !important;
+  border-color: rgba(117, 104, 225, .46) !important;
+  box-shadow: 0 18px 38px rgba(72, 76, 139, .16) !important;
   transform: translateY(-4px);
 }
 
@@ -60,12 +60,12 @@ body.products-page .product-top img {
   border: 1px solid rgba(147, 164, 201, .16);
   border-radius: 12px;
   background: rgba(255, 255, 255, .96);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+  box-shadow: 0 8px 18px rgba(58, 77, 132, .09);
 }
 
 body.products-page .product-top h2 {
   margin: 2px 0 5px;
-  color: #f7f9ff;
+  color: #172238;
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: -.025em;
@@ -73,7 +73,7 @@ body.products-page .product-top h2 {
 
 body.products-page .product-top p {
   min-height: 42px;
-  color: #a7bddb;
+  color: #60708a;
   font-size: .79rem;
   line-height: 1.52;
 }
@@ -90,8 +90,8 @@ body.products-page .product-rating span {
   filter: drop-shadow(0 2px 3px rgba(255, 181, 27, .16));
 }
 
-body.products-page .product-rating strong { color: #f7f9ff; font-weight: 800; }
-body.products-page .product-rating small { color: #a7bddb; }
+body.products-page .product-rating strong { color: #172238; font-weight: 800; }
+body.products-page .product-rating small { color: #687791; }
 
 body.products-page .product-tags {
   gap: 7px;
@@ -100,10 +100,10 @@ body.products-page .product-tags {
 
 body.products-page .product-tags span {
   padding: 5px 10px;
-  border: 1px solid rgba(127, 142, 177, .08);
+  border: 1px solid rgba(91, 106, 159, .08);
   border-radius: 999px;
-  background: #222837;
-  color: #f2f5ff;
+  background: rgba(232, 236, 246, .92);
+  color: #35425a;
   font-size: .65rem;
   font-weight: 700;
 }
@@ -111,7 +111,7 @@ body.products-page .product-tags span {
 body.products-page .product-price {
   min-height: 27px;
   margin-top: 14px;
-  color: #f7f9ff;
+  color: #172238;
   font-size: .76rem;
 }
 
@@ -120,8 +120,8 @@ body.products-page .product-price strong { font-weight: 800; }
 body.products-page .product-price span {
   padding: 5px 9px;
   border: 1px solid rgba(45, 196, 157, .1);
-  background: rgba(24, 112, 94, .25);
-  color: #62e9c4;
+  background: rgba(218, 247, 239, .9);
+  color: #148269;
   font-size: .61rem;
   font-weight: 800;
 }
@@ -143,29 +143,29 @@ body.products-page .product-actions a {
 }
 
 body.products-page .product-actions .explore {
-  border: 1px solid #8068ef !important;
-  background: #8068ef !important;
-  color: #101522 !important;
-  box-shadow: none !important;
+  border: 1px solid #7566e8 !important;
+  background: #7566e8 !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(98, 91, 202, .2) !important;
 }
 
 body.products-page .product-actions .explore:hover {
-  border-color: #907bf3 !important;
-  background: #907bf3 !important;
-  color: #101522 !important;
+  border-color: #6657d7 !important;
+  background: #6657d7 !important;
+  color: #fff !important;
 }
 
 body.products-page .product-actions .visit {
-  border: 1px solid #242b3b !important;
-  background: #242b3b !important;
-  color: #f7f9ff !important;
+  border: 1px solid rgba(82, 97, 151, .12) !important;
+  background: rgba(229, 234, 244, .96) !important;
+  color: #253149 !important;
   box-shadow: none !important;
 }
 
 body.products-page .product-actions .visit:hover {
-  border-color: #30394c !important;
-  background: #30394c !important;
-  color: #fff !important;
+  border-color: rgba(99, 82, 197, .2) !important;
+  background: rgba(219, 224, 239, .98) !important;
+  color: #5a4bc0 !important;
 }
 
 @media (max-width: 1040px) {
