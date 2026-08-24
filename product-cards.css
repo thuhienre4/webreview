@@ -67,7 +67,7 @@ body.products-page .product-top img {
 body.products-page .product-top h2 {
   margin: 2px 0 5px;
   color: #172238;
-  font-size: 1rem;
+  font-size: 1.08rem;
   font-weight: 800;
   letter-spacing: -.025em;
 }
@@ -75,14 +75,14 @@ body.products-page .product-top h2 {
 body.products-page .product-top p {
   min-height: 42px;
   color: #60708a;
-  font-size: .79rem;
+  font-size: .85rem;
   line-height: 1.52;
 }
 
 body.products-page .product-rating {
   gap: 8px;
   margin-top: 15px;
-  font-size: .76rem;
+  font-size: .81rem;
 }
 
 body.products-page .product-rating span {
@@ -105,7 +105,7 @@ body.products-page .product-tags span {
   border-radius: 999px;
   background: rgba(232, 236, 246, .92);
   color: #35425a;
-  font-size: .65rem;
+  font-size: .7rem;
   font-weight: 700;
 }
 
@@ -113,7 +113,7 @@ body.products-page .product-price {
   min-height: 27px;
   margin-top: 14px;
   color: #172238;
-  font-size: .76rem;
+  font-size: .82rem;
 }
 
 body.products-page .product-price strong { font-weight: 800; }
@@ -123,7 +123,7 @@ body.products-page .product-price span {
   border: 1px solid rgba(45, 196, 157, .1);
   background: rgba(218, 247, 239, .9);
   color: #148269;
-  font-size: .61rem;
+  font-size: .66rem;
   font-weight: 800;
 }
 
@@ -139,7 +139,7 @@ body.products-page .product-actions a {
   padding: 0 13px;
   border-width: 1px !important;
   border-radius: 8px !important;
-  font-size: .76rem;
+  font-size: .82rem;
   font-weight: 800;
 }
 
