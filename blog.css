@@ -38,6 +38,19 @@
 .category-navigation .finder-categories button svg { width: 25px; height: 25px; }
 .category-navigation .finder-categories button span { font-size: .82rem; }
 
+@media (min-width: 901px) {
+  .category-navigation .finder-categories button {
+    width: calc((100% - 224px) / 8);
+    min-width: calc((100% - 224px) / 8);
+    flex-basis: calc((100% - 224px) / 8);
+    padding-inline: 0;
+  }
+
+  .category-navigation .finder-categories button:nth-child(8) {
+    margin-right: 70px;
+  }
+}
+
 @media (max-width: 680px) {
   .review-prompt { margin: 34px 0 40px; font-size: .72rem; }
   .review-prompt span { padding: 11px 0 11px 12px; }
