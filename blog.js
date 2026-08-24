@@ -24,6 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
     filterStories(button.dataset.topic);
   }));
 
+  const categoryTrack = document.querySelector('.finder-categories');
+  const scrollCategories = (direction) => categoryTrack?.scrollBy({
+    left: direction * Math.max(240, categoryTrack.clientWidth * .55),
+    behavior: 'smooth'
+  });
+  document.querySelector('.category-prev')?.addEventListener('click', () => scrollCategories(-1));
+  document.querySelector('.category-next')?.addEventListener('click', () => scrollCategories(1));
+
   const escapeHtml = (input) => String(input || '').replace(/[&<>"']/g, (char) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[char]));

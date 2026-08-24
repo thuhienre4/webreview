@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=17" />
-  <link rel="stylesheet" href="blog.css?v=4" />
+  <link rel="stylesheet" href="blog.css?v=5" />
   <link rel="stylesheet" href="polish.css?v=18" />
   <link rel="stylesheet" href="harmony.css?v=30" />
   <link rel="stylesheet" href="typography.css?v=1" />
@@ -26,9 +26,20 @@
       <h1>Find a company you can trust</h1>
       <p>Explore practical reviews and savings guides for the popular stores in our local directory.</p>
       <form class="company-search" id="company-search"><input type="search" placeholder="Search company or category" aria-label="Search company or category" /><button type="submit" aria-label="Search">&#8981;</button></form>
-      <div class="finder-categories" aria-label="Popular categories">
-        <button type="button" data-topic="ai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.5 5.1L18 9l-4.5 1.9L12 16l-1.5-5.1L6 9l4.5-1.9L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg><span>AI Tools</span></button><button type="button" data-topic="voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10v4"/></svg><span>AI Voice</span></button><button type="button" data-topic="travel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 8 2 7-8c1-1 2.5-.8 3.2.2.7 1 .5 2.4-.5 3.2l-7.9 6.7 2 5-1.8 1-4-4-3.8 2.4-1.4-1.4 2.5-3.8L2 12.8 3 11Z"/></svg><span>Travel Services</span></button><button type="button" data-topic="booking"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V8l7-4 7 4v12M8 11h2M14 11h2M8 15h2M14 15h2"/></svg><span>Booking Platforms</span></button><button type="button" data-topic="crm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="m4 7 8 6 8-6"/></svg><span>CRM &amp; Email</span></button><button type="button" data-topic="scheduling"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v16H4zM8 3v4M16 3v4M4 10h16M8 14h3M13 14h3M8 18h3"/></svg><span>Scheduling</span></button>
-      </div>
+      <div class="review-prompt" aria-label="Review invitation"><span>Bought something recently?</span><a href="mailto:hello@reviewhubs.local?subject=Write%20a%20review">Write a review <b aria-hidden="true">&rarr;</b></a></div>
+      <section class="category-navigation" aria-labelledby="category-title">
+        <div class="category-navigation-head">
+          <h2 id="category-title">What are you looking for?</h2>
+          <div class="category-navigation-actions" aria-label="Category navigation">
+            <button class="category-arrow category-prev" type="button" aria-label="Previous categories">&lsaquo;</button>
+            <button class="category-arrow category-next" type="button" aria-label="Next categories">&rsaquo;</button>
+            <a class="category-see-more" href="products.html">See more</a>
+          </div>
+        </div>
+        <div class="finder-categories" aria-label="Popular categories">
+          <button type="button" data-topic="ai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.5 5.1L18 9l-4.5 1.9L12 16l-1.5-5.1L6 9l4.5-1.9L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg><span>AI Tools</span></button><button type="button" data-topic="voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10v4"/></svg><span>AI Voice</span></button><button type="button" data-topic="travel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 8 2 7-8c1-1 2.5-.8 3.2.2.7 1 .5 2.4-.5 3.2l-7.9 6.7 2 5-1.8 1-4-4-3.8 2.4-1.4-1.4 2.5-3.8L2 12.8 3 11Z"/></svg><span>Travel Services</span></button><button type="button" data-topic="booking"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V8l7-4 7 4v12M8 11h2M14 11h2M8 15h2M14 15h2"/></svg><span>Booking Platforms</span></button><button type="button" data-topic="crm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="m4 7 8 6 8-6"/></svg><span>CRM &amp; Email</span></button><button type="button" data-topic="scheduling"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v16H4zM8 3v4M16 3v4M4 10h16M8 14h3M13 14h3M8 18h3"/></svg><span>Scheduling</span></button>
+        </div>
+      </section>
     </div></section>
 
     <section class="latest-stories"><div class="container">
