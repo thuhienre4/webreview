@@ -1,0 +1,76 @@
+/* Review Hubs typography system
+   Loaded last so cards/tiles and long-form content share one typeface. */
+:root {
+  --font-sans: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --type-tracking-body: -0.012em;
+  --type-tracking-heading: -0.04em;
+  --type-leading-body: 1.65;
+  --type-leading-heading: 1.15;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+summary {
+  font-family: var(--font-sans);
+}
+
+body {
+  font-weight: 400;
+  line-height: var(--type-leading-body);
+  letter-spacing: var(--type-tracking-body);
+}
+
+/* Keep the same character shapes everywhere, including headings inside tiles. */
+:where(h1, h2, h3, h4, h5, h6, .brand-text) {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: var(--type-leading-heading);
+  letter-spacing: var(--type-tracking-heading);
+}
+
+/* Retire the remaining legacy display-font declarations in deal tiles/detail header. */
+.brand-text,
+.hot-deals .deal-grid .deal-tag span,
+.hot-deals .deal-grid .deal-big {
+  font-family: var(--font-sans) !important;
+}
+
+:where(
+  .deal-card,
+  .review-card,
+  .product-card,
+  .feature-coupon,
+  .trending-row,
+  .featured-story,
+  .small-story,
+  .coupon-card,
+  .coupon-info,
+  .store-panel,
+  .showcase-card,
+  .coupon-ticket
+) {
+  font-family: var(--font-sans);
+}
+
+/* Labels and actions use weight/case for hierarchy, not a second display font. */
+:where(
+  button,
+  .main-nav a,
+  .section-kicker,
+  .products-kicker,
+  .coupon-page-kicker,
+  .coupon-eyebrow,
+  .stories-heading > div > span,
+  .trust-pill,
+  .showcase-label
+) {
+  font-family: var(--font-sans);
+}
+
+:where(p, li, dt, dd) {
+  line-height: var(--type-leading-body);
+}
