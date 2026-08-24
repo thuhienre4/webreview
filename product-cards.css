@@ -4,14 +4,16 @@ body.products-page .products-directory {
 }
 
 body.products-page .product-grid {
+  width: min(1120px, 100%);
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  margin-inline: auto;
 }
 
 body.products-page .product-card {
   position: relative;
-  min-height: 270px;
-  padding: 17px;
+  min-height: 245px;
+  padding: 15px;
   overflow: hidden;
   border: 1px solid rgba(91, 107, 164, .2) !important;
   border-radius: 13px;
@@ -50,14 +52,14 @@ body.products-page .product-card:hover::before {
 }
 
 body.products-page .product-top {
-  grid-template-columns: 56px minmax(0, 1fr) !important;
-  gap: 15px;
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  gap: 13px;
 }
 
 body.products-page .product-top img {
-  width: 56px;
-  height: 56px;
-  padding: 7px;
+  width: 52px;
+  height: 52px;
+  padding: 6px;
   border: 1px solid rgba(147, 164, 201, .16);
   border-radius: 12px;
   background: rgba(255, 255, 255, .96);
@@ -73,7 +75,7 @@ body.products-page .product-top h2 {
 }
 
 body.products-page .product-top p {
-  min-height: 42px;
+  min-height: 38px;
   color: #60708a;
   font-size: .85rem;
   line-height: 1.52;
@@ -81,7 +83,7 @@ body.products-page .product-top p {
 
 body.products-page .product-rating {
   gap: 8px;
-  margin-top: 15px;
+  margin-top: 12px;
   font-size: .81rem;
 }
 
@@ -96,7 +98,7 @@ body.products-page .product-rating small { color: #687791; }
 
 body.products-page .product-tags {
   gap: 7px;
-  margin-top: 13px;
+  margin-top: 11px;
 }
 
 body.products-page .product-tags span {
@@ -111,7 +113,7 @@ body.products-page .product-tags span {
 
 body.products-page .product-price {
   min-height: 27px;
-  margin-top: 14px;
+  margin-top: 12px;
   color: #172238;
   font-size: .82rem;
 }
@@ -131,7 +133,7 @@ body.products-page .product-actions {
   grid-template-columns: max-content max-content !important;
   justify-content: start;
   gap: 9px;
-  padding-top: 15px;
+  padding-top: 12px;
 }
 
 body.products-page .product-actions a {
@@ -176,7 +178,7 @@ body.products-page .product-actions .visit:hover {
 @media (max-width: 680px) {
   body.products-page .products-directory { padding-top: 10px; }
   body.products-page .product-grid { grid-template-columns: 1fr; gap: 13px; }
-  body.products-page .product-card { min-height: 270px; padding: 16px; }
+  body.products-page .product-card { min-height: 250px; padding: 15px; }
   body.products-page .product-actions { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   body.products-page .product-actions a { width: 100%; padding-inline: 9px; }
 }
