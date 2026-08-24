@@ -32,9 +32,9 @@
 .category-arrow:hover { background: #4969d5; color: #fff; }
 .category-see-more { min-height: 34px; display: inline-flex; align-items: center; margin-left: 6px; padding: 0 15px; border: 1px solid #5574dc; border-radius: 999px; color: #3558cc; font-size: .72rem; font-weight: 600; }
 .category-see-more:hover { background: #4969d5; color: #fff; }
-.category-navigation .finder-categories { width: 100%; display: flex; gap: clamp(28px,5vw,74px); margin: 0; padding: 0 0 8px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; }
+.category-navigation .finder-categories { width: 100%; display: flex; gap: clamp(15px,1.5vw,22px); margin: 0; padding: 0 0 8px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; scroll-snap-type: x proximity; }
 .category-navigation .finder-categories::-webkit-scrollbar { display: none; }
-.category-navigation .finder-categories button { min-width: 112px; min-height: 76px; flex: 1 0 112px; padding: 0; color: #172238; text-align: center; }
+.category-navigation .finder-categories button { min-width: 112px; min-height: 76px; flex: 0 0 auto; padding: 0 10px; color: #172238; text-align: center; scroll-snap-align: start; }
 .category-navigation .finder-categories button svg { width: 25px; height: 25px; }
 .category-navigation .finder-categories button span { font-size: .82rem; }
 
